@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO clans\n(group_id,`name`,slug,motto,about,call_sign,is_network,created_at,updated_at,deleted_at)\n\nVALUES(?,?,?,?,?,?,0,?,0,0)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 7
+    },
+    "nullable": []
+  },
+  "hash": "3b0f07d58ec328f7b31bdca7a8cd7c4e3edb6a61424d6fd0df1491f8d50a96bf"
+}

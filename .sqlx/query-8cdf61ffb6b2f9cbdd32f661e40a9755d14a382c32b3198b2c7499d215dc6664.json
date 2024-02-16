@@ -1,0 +1,62 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT *\nFROM member_snapshots \nWHERE member_snapshots.membership_id = ?\nAND member_snapshots.snapshot_name = ?\nAND member_snapshots.version = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "membership_id",
+        "ordinal": 1,
+        "type_info": "Int64"
+      },
+      {
+        "name": "snapshot_name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "version",
+        "ordinal": 3,
+        "type_info": "Int64"
+      },
+      {
+        "name": "data",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 5,
+        "type_info": "Int64"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 6,
+        "type_info": "Int64"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 7,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "8cdf61ffb6b2f9cbdd32f661e40a9755d14a382c32b3198b2c7499d215dc6664"
+}

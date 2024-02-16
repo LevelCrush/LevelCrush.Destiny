@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT \n    COALESCE(MAX(member_activities.occurred_at), 0) AS  timestamp\nFROM member_activities \nWHERE member_activities.character_id = ?\nLIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "name": "timestamp",
+        "ordinal": 0,
+        "type_info": "Int"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "23f60c90e90f1dceba6fb82819d1cb29d74244d7f5428cc4b20bcc9eb587e545"
+}

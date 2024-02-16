@@ -1,0 +1,68 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT\n    clans.group_id,\n    clans.name,\n    clans.slug,\n    clans.motto,\n    clans.about,\n    clans.call_sign,\n    clans.is_network,\n    clans.updated_at,\n    COUNT(DISTINCT clan_members.membership_id) AS member_count\nFROM clans\nINNER JOIN clan_members AS target_member ON clans.group_id = target_member.group_id\nLEFT JOIN clan_members ON clans.group_id = clan_members.group_id\nWHERE target_member.membership_id = ?\nGROUP BY clans.group_id\nLIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "name": "group_id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "slug",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "motto",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "about",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "call_sign",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "is_network",
+        "ordinal": 6,
+        "type_info": "Int64"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 7,
+        "type_info": "Int64"
+      },
+      {
+        "name": "member_count",
+        "ordinal": 8,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "e85b2cca486be3917123488c346f27c713bf9448db04cba83566d11c918046ba"
+}

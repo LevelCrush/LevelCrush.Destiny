@@ -1,0 +1,86 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT\n    members.membership_id,\n    members.platform,\n    members.last_played_at,\n    members.display_name,\n    members.display_name_global,\n    members.updated_at,\n    COALESCE(clans.group_id, 0) AS clan_group_id,\n    COALESCE(clans.name, '') AS clan_name,\n    COALESCE(clans.call_sign, '') AS clan_call_sign,\n    COALESCE(clan_members.joined_at,0) AS clan_joined_at,\n    COALESCE(clan_members.group_role,0) AS clan_group_role,\n    COALESCE(clans.is_network,0) AS clan_is_network\nFROM members\nLEFT JOIN clan_members ON members.membership_id = clan_members.membership_id\nLEFT JOIN clans ON clan_members.group_id = clans.group_id\nWHERE members.display_name_global = ?\nORDER BY members.last_played_at DESC\nLIMIT 1",
+  "describe": {
+    "columns": [
+      {
+        "name": "membership_id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "platform",
+        "ordinal": 1,
+        "type_info": "Int64"
+      },
+      {
+        "name": "last_played_at",
+        "ordinal": 2,
+        "type_info": "Int64"
+      },
+      {
+        "name": "display_name",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "display_name_global",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 5,
+        "type_info": "Int64"
+      },
+      {
+        "name": "clan_group_id",
+        "ordinal": 6,
+        "type_info": "Int"
+      },
+      {
+        "name": "clan_name",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "clan_call_sign",
+        "ordinal": 8,
+        "type_info": "Text"
+      },
+      {
+        "name": "clan_joined_at",
+        "ordinal": 9,
+        "type_info": "Int"
+      },
+      {
+        "name": "clan_group_role",
+        "ordinal": 10,
+        "type_info": "Int"
+      },
+      {
+        "name": "clan_is_network",
+        "ordinal": 11,
+        "type_info": "Int"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "b944a08de30941a5d257c4fe47844af464f91fe1f23faa1685e76bea709ad547"
+}

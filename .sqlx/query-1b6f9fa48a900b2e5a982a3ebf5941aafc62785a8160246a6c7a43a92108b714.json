@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT\n    instance_members.membership_id,\n    instance_members.platform,\n    instances.occurred_at AS timestamp\nFROM instances\nINNER JOIN instance_members ON instances.instance_id = instance_members.instance_id\nLEFT JOIN members ON instance_members.membership_id = members.membership_id\nWHERE members.id IS NULL\nAND (instances.occurred_at > ? AND instances.occurred_at < ?)\nGROUP BY instance_members.membership_id, instance_members.platform, instances.occurred_at\nLIMIT ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "membership_id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "platform",
+        "ordinal": 1,
+        "type_info": "Int64"
+      },
+      {
+        "name": "timestamp",
+        "ordinal": 2,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1b6f9fa48a900b2e5a982a3ebf5941aafc62785a8160246a6c7a43a92108b714"
+}

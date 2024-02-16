@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE clans\nSET\n    group_id = ?,\n    name = ?,\n    slug = ?,\n    motto = ?,\n    about = ?,\n    call_sign = ?,\n    updated_at = ?,\n    deleted_at = ?\nWHERE clans.id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 9
+    },
+    "nullable": []
+  },
+  "hash": "b82a25c99ecac6b1a66c0e54ddb3ff4a9d8513f622efe827a9b9c1728e130e2f"
+}

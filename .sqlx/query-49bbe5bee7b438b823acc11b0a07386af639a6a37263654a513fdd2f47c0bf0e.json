@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE members \nSET\n    platform = ?,\n    display_name = ?,\n    display_name_global = ?,\n    guardian_rank_current = ?,\n    guardian_rank_lifetime = ?,\n    last_played_at = ?,\n    updated_at = ? \nWHERE members.id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 8
+    },
+    "nullable": []
+  },
+  "hash": "49bbe5bee7b438b823acc11b0a07386af639a6a37263654a513fdd2f47c0bf0e"
+}

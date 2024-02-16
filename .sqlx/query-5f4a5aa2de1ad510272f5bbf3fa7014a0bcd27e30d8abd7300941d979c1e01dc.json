@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "WITH\ntarget_member AS (\n    SELECT members.*\n    FROM members\n    WHERE members.membership_id  = ?\n),\nseals AS (\n    SELECT\n        triumphs.hash,\n        triumphs.title,\n        triumphs.gilded\n    FROM manifest_triumphs AS triumphs\n    WHERE triumphs.is_title = 1\n), /*grab all seals (titles) */\n\nmember_seals_gilded AS (\n    SELECT\n        target_member.membership_id,\n        seals.title,\n        member_triumphs.state,\n        member_triumphs.times_completed,\n        member_triumphs.state & 64 = 64 AS can_equip\n    FROM member_triumphs\n    INNER JOIN seals ON member_triumphs.hash = seals.hash\n    INNER JOIN target_member ON member_triumphs.membership_id = target_member.membership_id\n    AND seals.gilded = 1 /* looking for seals that have a gilded version */\n    AND member_triumphs.times_completed > 0 /* and our member has completed it > 0 which means they have gilded at some point */\n),\nmember_seals AS (\n    SELECT\n        target_member.membership_id,\n        seals.title,\n        member_triumphs.state,\n        member_triumphs.times_completed,\n        member_triumphs.state & 64 = 64 AS can_equip\n    FROM member_triumphs\n    INNER JOIN seals ON member_triumphs.hash = seals.hash\n    INNER JOIN target_member ON member_triumphs.membership_id = target_member.membership_id\n    AND seals.gilded = 0 /*# looking for seals that dont have a gilded version */\n)\n/*The below will merge all the gilded versions with the non gilded versions by Title.\nThere can be multiple versions of the same title, they just have slightly different objectives but they are still the same Title regardless\n*/\nSELECT\n    member_seals.membership_id,\n    member_seals.title,\n    COALESCE(member_seals_gilded.times_completed > 0, 0) AS has_gilded,\n    COALESCE(member_seals_gilded.times_completed, 0) AS total_gilds,\n    member_seals.can_equip,\n    COALESCE(member_seals_gilded.can_equip, 0) AS can_equip_gilded\nFROM member_seals\nLEFT JOIN member_seals_gilded ON member_seals.title = member_seals_gilded.title\nWHERE member_seals.can_equip = 1\nGROUP BY member_seals.membership_id, member_seals.title, member_seals_gilded.times_completed, member_seals_gilded.can_equip\nORDER BY member_seals.title ASC",
+  "describe": {
+    "columns": [
+      {
+        "name": "membership_id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "title",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "has_gilded",
+        "ordinal": 2,
+        "type_info": "Int"
+      },
+      {
+        "name": "total_gilds",
+        "ordinal": 3,
+        "type_info": "Int"
+      },
+      {
+        "name": "can_equip",
+        "ordinal": 4,
+        "type_info": "Int"
+      },
+      {
+        "name": "can_equip_gilded",
+        "ordinal": 5,
+        "type_info": "Int"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5f4a5aa2de1ad510272f5bbf3fa7014a0bcd27e30d8abd7300941d979c1e01dc"
+}

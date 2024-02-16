@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "WITH\ntarget_members AS (\n    SELECT\n        members.*\n    FROM clans\n    INNER JOIN clan_members ON clans.group_id = clan_members.group_id\n    INNER JOIN members ON clan_members.membership_id = members.membership_id\n    WHERE clans.is_network = 1\n),\ntriumph_titles AS (\n    SELECT\n        triumphs.*\n    FROM manifest_triumphs AS triumphs\n    WHERE triumphs.is_title = 1\n),\nleaderboard AS (\n    SELECT\n        target_members.display_name_global      AS display_name,\n        COALESCE(SUM(member_triumphs.state & 64 = 64), 0) AS amount\n    FROM target_members\n    INNER JOIN member_triumphs ON target_members.membership_id = member_triumphs.membership_id\n    INNER JOIN triumph_titles ON member_triumphs.hash = triumph_titles.hash\n    GROUP BY target_members.display_name_global\n),\nleaderboard_standings AS (\n    SELECT\n        leaderboard.display_name,\n        leaderboard.amount,\n        (RANK() OVER w) AS `standing`,\n        (PERCENT_RANK() OVER w) * 100 AS `percent_ranking`\n    FROM leaderboard\n    WINDOW w AS (ORDER BY leaderboard.amount DESC)\n)\n\n/* normalize expected output */\nSELECT\n    leaderboard_standings.display_name,\n    leaderboard_standings.amount + 0.0 AS amount, /* this seems silly, but is required for BigDecimal to be mapped as our uniform type */\n    leaderboard_standings.standing,\n    leaderboard_standings.percent_ranking\nFROM leaderboard_standings\nORDER BY leaderboard_standings.standing ASC, leaderboard_standings.display_name ASC\n",
+  "describe": {
+    "columns": [
+      {
+        "name": "display_name",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "amount",
+        "ordinal": 1,
+        "type_info": "Float"
+      },
+      {
+        "name": "standing",
+        "ordinal": 2,
+        "type_info": "Int"
+      },
+      {
+        "name": "percent_ranking",
+        "ordinal": 3,
+        "type_info": "Float"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "382af8c67ad2e43e81a13001cbf03d5e2457760ed302d36788f9c50ab14be0d5"
+}

@@ -1,0 +1,86 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT\n    members.membership_id,\n    members.platform,\n    members.last_played_at,\n    members.display_name,\n    members.display_name_global,\n    members.updated_at,\n    clans.group_id AS clan_group_id,\n    clans.name AS clan_name,\n    clans.call_sign AS clan_call_sign,\n    clan_members.joined_at AS clan_joined_at,\n    clan_members.group_role AS clan_group_role,\n    clans.is_network AS clan_is_network\nFROM clan_members\nINNER JOIN clans ON clan_members.group_id = clans.group_id\nINNER JOIN members ON clan_members.membership_id = members.membership_id\nWHERE clans.is_network = 1\nORDER BY  clan_members.group_role DESC, members.display_name_global ASC",
+  "describe": {
+    "columns": [
+      {
+        "name": "membership_id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "platform",
+        "ordinal": 1,
+        "type_info": "Int64"
+      },
+      {
+        "name": "last_played_at",
+        "ordinal": 2,
+        "type_info": "Int64"
+      },
+      {
+        "name": "display_name",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "display_name_global",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 5,
+        "type_info": "Int64"
+      },
+      {
+        "name": "clan_group_id",
+        "ordinal": 6,
+        "type_info": "Int64"
+      },
+      {
+        "name": "clan_name",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "clan_call_sign",
+        "ordinal": 8,
+        "type_info": "Text"
+      },
+      {
+        "name": "clan_joined_at",
+        "ordinal": 9,
+        "type_info": "Int64"
+      },
+      {
+        "name": "clan_group_role",
+        "ordinal": 10,
+        "type_info": "Int64"
+      },
+      {
+        "name": "clan_is_network",
+        "ordinal": 11,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9364d9f7cf6d83f9b286d0a7f87558e41404a73c6209ce42672bbe974de723d2"
+}

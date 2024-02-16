@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT\n    instance_members.id,\n    instance_members.membership_id,\n    instance_members.character_id\nFROM instance_members   \nWHERE instance_members.instance_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "membership_id",
+        "ordinal": 1,
+        "type_info": "Int64"
+      },
+      {
+        "name": "character_id",
+        "ordinal": 2,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "52a8c758e9f74ebb73f1938df005d01ae0480423c4792b04a922aa1a3b05e3a0"
+}
