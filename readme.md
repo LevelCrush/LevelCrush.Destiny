@@ -21,21 +21,6 @@ So this repository is an experimental place. Not everything will stick, code is 
 
 ## Contributing
 
-We welcome all contributions. Feel free to open a [Github Discussion Post](https://github.com/LevelCrush/levelcrush/discussions) or raise any [Github Issues](https://github.com/LevelCrush/levelcrush/issues).
+We welcome all contributions. Feel free to open a [Github Discussion Post](./discussions) or raise any [Github Issues](./issues).
 
-At the moment there are no contribution guideliness (yet) or license for the code (yet). Do as you wish or what you feel is most appropriate for the community.
 
-## Index
-
-1. Technical Readme - [View](./technical.md)
-2. Tagbind Repository - [View](https://github.com/LevelCrush/TagBind)
-3. Satisfactory Saves - [View](https://github.com/LevelCrush/satisfactory)
-4. levelcrush.com (Archived) (Repository) - [View](https://github.com/LevelCrush/levelcrush.com)
-5. api.levelcrush.com (Archived) (Repository) - [View](https://github.com/LevelCrush/api.levelcrush.com)
-6. login.levelcrush.com (Archived) (Repository) - [View](https://github.com/LevelCrush/login.levelcrush.com)
-
-## Other Bots used in our Discord
-
-1. Music Man - [View](https://github.com/austinharms/MusicMan)
-2. Lilith - [View](https://github.com/lilith-discord-bot/lilith)
-3. Charlemagne - [View](https://warmind.io/)
