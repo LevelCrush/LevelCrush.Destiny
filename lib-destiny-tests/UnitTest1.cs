@@ -1,4 +1,4 @@
-namespace lib_destiny_tests;
+namespace LevelCrush.Destiny.Tests;
 
 public class Tests
 {
