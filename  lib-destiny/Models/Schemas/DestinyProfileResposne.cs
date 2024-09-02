@@ -23,4 +23,7 @@ public class DestinyProfileResposne
     /// All other component types may use the primary timestamp property.
     [DataMember(Name = "secondaryComponentsMintedTimestamp")]
     public string TimestampSecondaryComponents { get; set; }
+    
+    [DataMember(Name="profile", IsRequired = false)]
+    public DestinyComponent<DestinyProfileComponent>? Profile { get; set; }
 }

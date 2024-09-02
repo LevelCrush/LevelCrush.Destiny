@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Destiny.Models.Enums;
 
 namespace Destiny.Models.Schemas;
@@ -8,7 +7,7 @@ namespace Destiny.Models.Schemas;
 public class UserInfoCard
 {
     [DataMember(Name = "applicableMembershipTypes")]
-    public ConcurrentQueue<BungieMembershipType> ApplicableMembershipTypes { get; set; }
+    public BungieMembershipType[] ApplicableMembershipTypes { get; set; }
 
     [DataMember(Name = "crossSaveOverride")]
     public BungieMembershipType CrossSaveOverride { get; set; }
