@@ -16,23 +16,23 @@ public static class BungieClient
 
     public static string ApiKey { get; set; }
 
-    public static BungieRequest<BaseRequest> Get(string endpoint)
+    public static ApiRequest<BaseRequest> Get(string endpoint)
     {
         return Get<BaseRequest>(endpoint);
     }
 
-    public static BungieRequest<TRequestBody> Get<TRequestBody>(string endpoint) where TRequestBody : class
+    public static ApiRequest<TRequestBody> Get<TRequestBody>(string endpoint) where TRequestBody : class
     {
-        return new BungieRequest<TRequestBody>(endpoint, ApiKey, Client).Method(BungieRequestMethod.Get);
+        return new ApiRequest<TRequestBody>(endpoint, ApiKey, Client).Method(BungieRequestMethod.Get);
     }
 
-    public static BungieRequest<BaseRequest> Post(string endpoint)
+    public static ApiRequest<BaseRequest> Post(string endpoint)
     {
         return Post<BaseRequest>(endpoint);
     }
 
-    public static BungieRequest<TRequestBody> Post<TRequestBody>(string endpoint) where TRequestBody : class
+    public static ApiRequest<TRequestBody> Post<TRequestBody>(string endpoint) where TRequestBody : class
     {
-        return new BungieRequest<TRequestBody>(endpoint, ApiKey, Client).Method(BungieRequestMethod.Post);
+        return new ApiRequest<TRequestBody>(endpoint, ApiKey, Client).Method(BungieRequestMethod.Post);
     }
 }

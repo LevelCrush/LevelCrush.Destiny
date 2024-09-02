@@ -8,8 +8,9 @@ using RestSharp;
 
 namespace Destiny;
 
-public class BungieRequest<TRequestBody> where TRequestBody : class
+public class ApiRequest<TRequestBody> where TRequestBody : class
 {
+    private readonly string _apiKey;
     private readonly RestClient _client;
     private readonly ConcurrentBag<DestinyComponentType> _components;
 
@@ -18,7 +19,6 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     private readonly ConcurrentDictionary<string, string> _queries;
 
     private readonly ushort _retriesMax;
-    private readonly string _apiKey;
     private TRequestBody? _body;
 
     private BungieRequestBodyType _bodyType;
@@ -26,11 +26,11 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
 
     private ushort _retries;
 
-    public BungieRequest(string endPoint, string apiKey, RestClient client) : this(endPoint, apiKey, 3, client)
+    public ApiRequest(string endPoint, string apiKey, RestClient client) : this(endPoint, apiKey, 3, client)
     {
     }
 
-    public BungieRequest(string endPoint, string apiKey, ushort retriesMax, RestClient client)
+    public ApiRequest(string endPoint, string apiKey, ushort retriesMax, RestClient client)
     {
         _endPoint = endPoint;
         _apiKey = apiKey;
@@ -53,7 +53,7 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     /// </summary>
     /// <param name="method"></param>
     /// <returns></returns>
-    public BungieRequest<TRequestBody> Method(BungieRequestMethod method)
+    public ApiRequest<TRequestBody> Method(BungieRequestMethod method)
     {
         _method = method;
         return this;
@@ -65,7 +65,7 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     /// <param name="body">The body object that will be serialized</param>
     /// <param name="bodyType">The type of body. Default is JSON</param>
     /// <returns></returns>
-    public BungieRequest<TRequestBody> Body(TRequestBody? body,
+    public ApiRequest<TRequestBody> Body(TRequestBody? body,
         BungieRequestBodyType bodyType = BungieRequestBodyType.JSON)
     {
         _body = body;
@@ -78,7 +78,7 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     /// </summary>
     /// <param name="componentType"></param>
     /// <returns></returns>
-    public BungieRequest<TRequestBody> Component(DestinyComponentType componentType)
+    public ApiRequest<TRequestBody> Component(DestinyComponentType componentType)
     {
         _components.Add(componentType);
         return this;
@@ -91,7 +91,7 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     /// <param name="routeParam"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public BungieRequest<TRequestBody> Param(DestinyRouteParam routeParam, string value)
+    public ApiRequest<TRequestBody> Param(DestinyRouteParam routeParam, string value)
     {
         _params.AddOrUpdate(routeParam, value, (k, v) => value);
         return this;
@@ -103,7 +103,7 @@ public class BungieRequest<TRequestBody> where TRequestBody : class
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public BungieRequest<TRequestBody> Query(string key, string value)
+    public ApiRequest<TRequestBody> Query(string key, string value)
     {
         _queries.AddOrUpdate(key, value, (k, v) => value);
         return this;
