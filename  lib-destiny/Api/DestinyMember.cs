@@ -7,6 +7,12 @@ namespace Destiny.Api;
 
 public static class DestinyMember
 {
+    /// <summary>
+    ///     Searches the Bungie Databases for a Destiny2 user with the specified display name+code
+    ///     This is an api function and will **always** call the Bungie API.
+    /// </summary>
+    /// <param name="bungieName"></param>
+    /// <returns></returns>
     public static async Task<UserInfoCard?> Search(string bungieName)
     {
         var targetCode = "";
