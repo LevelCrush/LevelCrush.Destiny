@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LevelCrush.Destiny.Extensions;
+namespace Destiny.Extensions;
 
 public static class EnumExtensions
 {

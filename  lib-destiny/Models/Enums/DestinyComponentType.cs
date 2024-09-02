@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Runtime.Serialization;
-using LevelCrush.Destiny.Converters;
+using Destiny.Converters;
 
-namespace LevelCrush.Destiny.Models.Enums;
+namespace Destiny.Models.Enums;
 
 [TypeConverter(typeof(DestinyRouteParamConverter))]
 [DataContract]

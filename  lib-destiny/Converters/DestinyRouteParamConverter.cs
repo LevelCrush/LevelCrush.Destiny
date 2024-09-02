@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using LevelCrush.Destiny.Extensions;
-using LevelCrush.Destiny.Models.Enums;
+using Destiny.Extensions;
+using Destiny.Models.Enums;
 
-namespace LevelCrush.Destiny.Converters;
+namespace Destiny.Converters;
 
 public class DestinyRouteParamConverter : EnumConverter
 {
@@ -12,25 +12,31 @@ public class DestinyRouteParamConverter : EnumConverter
     {
     }
 
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
     {
         return sourceType == typeof(string);
     }
 
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    public override object ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
         var input = (string)value; // we only accept converting from a string 
         return Enum.GetValues<DestinyRouteParam>()
             .FirstOrDefault(x => x.GetAttribute<DisplayAttribute>().Name == input);
     }
 
-    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+    public override object ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value,
         Type destinationType)
     {
-        return ((DestinyRouteParam)value).GetAttribute<DisplayAttribute>().Name;
+        if (value == null)
+        {
+            return "";
+        }
+
+        var name = ((DestinyRouteParam)value).GetAttribute<DisplayAttribute>().Name;
+        return name ?? "";
     }
 
-    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
     {
         return destinationType == typeof(string);
     }

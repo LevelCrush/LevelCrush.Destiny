@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RootNamespace>LevelCrush.Destiny.Tests</RootNamespace>
+        <RootNamespace>Destiny.Tests</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
@@ -24,6 +24,15 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.test.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

@@ -1,13 +1,17 @@
-using LevelCrush.Destiny.Converters;
-using LevelCrush.Destiny.Models.Enums;
+using Destiny.Converters;
+using Destiny.Models.Enums;
 
-namespace LevelCrush.Destiny.Tests;
+namespace Destiny.Tests;
 
 public class Tests
 {
+    private static DestinyConfig Config { get; set; }
+
     [SetUp]
     public void Setup()
     {
+        //   var config = new ConfigurationBu
+        Config = DestinyConfig.Load();
     }
 
     [Test]
@@ -16,7 +20,7 @@ public class Tests
         var input = "{membershipId}";
         var converter = new DestinyRouteParamConverter();
         var converted = converter.ConvertFrom(input);
-        Assert.AreEqual(converted, DestinyRouteParam.PlatformMembershipID);
+        Assert.That(converted, Is.EqualTo(DestinyRouteParam.PlatformMembershipID));
     }
 
     [Test]
@@ -25,6 +29,6 @@ public class Tests
         var input = DestinyRouteParam.PlatformMembershipID;
         var converter = new DestinyRouteParamConverter();
         var converted = converter.ConvertTo(input, typeof(string));
-        Assert.AreEqual(converted, "{membershipId}");
+        Assert.That(converted, Is.EqualTo("{membershipId}"));
     }
 }

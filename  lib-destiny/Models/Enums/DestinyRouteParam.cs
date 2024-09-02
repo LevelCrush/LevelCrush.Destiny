@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace LevelCrush.Destiny.Models.Enums;
+namespace Destiny.Models.Enums;
 
 [DataContract]
 public enum DestinyRouteParam
