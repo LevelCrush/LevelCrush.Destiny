@@ -19,7 +19,7 @@ public static class DestinyMember
         var targetName = "";
         var splitString = bungieName.Split("#");
 
-        if (splitString.Length >= 1)
+        if (splitString.Length > 0)
         {
             targetCode = splitString.Last();
             targetName = bungieName.Replace($"#{targetCode}", "");
