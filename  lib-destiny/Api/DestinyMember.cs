@@ -5,7 +5,7 @@ using Destiny.Models.Schemas;
 
 namespace Destiny.Api;
 
-public static class Member
+public static class DestinyMember
 {
     public static async Task<UserInfoCard?> Search(string bungieName)
     {

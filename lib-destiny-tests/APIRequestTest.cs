@@ -18,7 +18,7 @@ public class APIRequestTest
     [Test]
     public async Task TestSearch()
     {
-        var user = await Member.Search("Primal#8266");
+        var user = await DestinyMember.Search("Primal#8266");
         Assert.That(user, Is.Not.Null);
     }
 }
