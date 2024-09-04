@@ -8,6 +8,26 @@ namespace Destiny.Api;
 public static class DestinyMember
 {
     /// <summary>
+    ///     Expliclity get the profile
+    /// </summary>
+    /// <param name="membershipId"></param>
+    /// <param name="membershipType"></param>
+    /// <returns></returns>
+    public static async Task<DestinyProfileResposne?> Profile(long membershipId, int membershipType)
+    {
+        var req = await BungieClient.Get("/Destiny2/{membershipType}/Profile/{membershipId}/")
+            .Param(DestinyRouteParam.PlatformMembershipID, membershipId.ToString())
+            .Param(DestinyRouteParam.PlatformMembershipType, membershipType.ToString())
+            .Component(DestinyComponentType.Profiles)
+            .Component(DestinyComponentType.Characters)
+            .Component(DestinyComponentType.Records)
+            .Send<DestinyProfileResposne>();
+
+        return req != null ? req.Response : null;
+    }
+
+
+    /// <summary>
     ///     Searches the Bungie Databases for a Destiny2 user with the specified display name+code
     ///     This is an api function and will **always** call the Bungie API.
     /// </summary>

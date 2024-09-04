@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Destiny.Models.Schemas;
 
@@ -7,7 +8,6 @@ namespace Destiny.Models.Schemas;
 /// **Note**: This does not contain all available properties of a full Destiny Profile response. Only what we need
 /// 
 /// **Source**: [Bungie Official Documentation](https://bungie-net.github.io/#/components/schemas/Destiny.Responses.DestinyProfileResponse)
-[DataContract]
 public class DestinyProfileResposne
 {
     /// Records the timestamp of when most components were last generated from the world server source.
@@ -21,9 +21,15 @@ public class DestinyProfileResposne
     /// PresentationNodes, Records, Collectibles, Metrics, StringVariables, Craftables, Transitory
     /// 
     /// All other component types may use the primary timestamp property.
-    [DataMember(Name = "secondaryComponentsMintedTimestamp")]
+    [JsonPropertyName("secondaryComponentsMintedTimestamp")]
     public string TimestampSecondaryComponents { get; set; }
-    
-    [DataMember(Name="profile", IsRequired = false)]
+
+    [JsonPropertyName("profile")]
     public DestinyComponent<DestinyProfileComponent>? Profile { get; set; }
+
+    [JsonPropertyName("characters")]
+    public DestinyComponent<Dictionary<string, DestinyCharacterComponent>>? Characters { get; set; }
+
+    [JsonPropertyName("profileRecords")]
+    public DestinyComponent<DestinyProfileRecordsComponent>? ProfileRecords { get; set; }
 }

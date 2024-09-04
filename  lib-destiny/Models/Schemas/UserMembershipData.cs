@@ -1,11 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Destiny.Models.Schemas;
 
-[DataContract]
 public class UserMembershipData
 {
-    [DataMember(Name = "destinyMemberships")]
+    [JsonPropertyName("destinyMemberships")]
     public ConcurrentQueue<UserInfoCard> Memberships { get; set; }
 }

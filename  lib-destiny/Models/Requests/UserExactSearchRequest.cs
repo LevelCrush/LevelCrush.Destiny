@@ -1,13 +1,12 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Destiny.Models.Requests;
 
-[DataContract]
 public class UserExactSearchRequest
 {
-    [DataMember(Name = "displayName")]
+    [JsonPropertyName("displayName")]
     public string DisplayName { get; set; }
 
-    [DataMember(Name = "displayNameCode")]
+    [JsonPropertyName("displayNameCode")]
     public short Code { get; set; }
 }

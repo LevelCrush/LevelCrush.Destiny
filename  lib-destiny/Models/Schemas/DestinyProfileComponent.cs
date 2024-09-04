@@ -1,25 +1,28 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Destiny.Models.Schemas;
 
 /// Contains more relevant information about a membership profile
 /// 
 /// **Source** [Bungie Documentation](https://bungie-net.github.io/#/components/schemas/Destiny.Entities.Profiles.DestinyProfileComponent)
-[DataContract]
 public class DestinyProfileComponent
 {
-    [DataMember(Name = "dateLastPlayed")]
+    [JsonPropertyName("dateLastPlayed")]
     public string DateLastPlayed { get; set; }
 
-    [DataMember(Name = "userInfo")]
-    public UserInfoCard UserInfoCard { get; set; }
+    [JsonPropertyName("userInfo")]
+    public UserInfoCard UserInfo { get; set; }
 
-    [DataMember(Name = "characterIds")]
+    [JsonPropertyName("characterIds")]
     public string[] Characters { get; set; }
 
-    [DataMember(Name = "currentGuardianRank")]
-    public ushort GuardianRankCurrent { get; set; }
+    [DataMember(Name = "seasonHashes", IsRequired = false)]
+    public uint[] SeasonHashes { get; set; }
 
-    [DataMember(Name = "lifetimeHighestGuardianRank")]
-    public ushort GuardianRankLifetime { get; set; }
+    [JsonPropertyName("currentGuardianRank")]
+    public int GuardianRankCurrent { get; set; }
+
+    [JsonPropertyName("lifetimeHighestGuardianRank")]
+    public int GuardianRankLifetime { get; set; }
 }

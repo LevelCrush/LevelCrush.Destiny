@@ -21,4 +21,11 @@ public class APIRequestTest
         var user = await DestinyMember.Search("Primal#8266");
         Assert.That(user, Is.Not.Null);
     }
+
+    [Test]
+    public async Task TestProfile()
+    {
+        var profile = await DestinyMember.Profile(4611686018439874403, 1);
+        Assert.That(profile, Is.Not.Null);
+    }
 }
