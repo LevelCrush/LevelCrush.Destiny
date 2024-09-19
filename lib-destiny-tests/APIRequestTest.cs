@@ -1,4 +1,5 @@
 ﻿using Destiny.Api;
+using NuGet.Frameworks;
 
 namespace Destiny.Tests;
 
@@ -19,13 +20,23 @@ public class APIRequestTest
     public async Task TestSearch()
     {
         var user = await DestinyMember.Search("Primal#8266");
+        
         Assert.That(user, Is.Not.Null);
+        Assert.That(user.GlobalDisplayName, Is.EqualTo("Primal"));
+        Assert.That(user.GlobalDisplayNameCode, Is.EqualTo(8266));
     }
 
     [Test]
     public async Task TestProfile()
     {
-        var profile = await DestinyMember.Profile(4611686018439874403, 1);
-        Assert.That(profile, Is.Not.Null);
+        // issue request and query test user
+        var user = await DestinyMember.Profile(4611686018439874403, 1);
+        Assert.That(user, Is.Not.Null);
+        Assert.That(user.Profile, Is.Not.Null);
+        Assert.That(user.Profile.Data, Is.Not.Null);
+        
+        // compare to test user
+        Assert.That(user.Profile.Data.UserInfo.GlobalDisplayName, Is.EqualTo("Primal"));
+        Assert.That(user.Profile.Data.UserInfo.GlobalDisplayNameCode, Is.EqualTo(8266));
     }
 }
