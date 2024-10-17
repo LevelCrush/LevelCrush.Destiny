@@ -8,7 +8,7 @@ namespace Destiny.Api;
 public static class DestinyMember
 {
     /// <summary>
-    ///     Expliclity get the profile
+    ///     Explicitly get the profile
     /// </summary>
     /// <param name="membershipId"></param>
     /// <param name="membershipType"></param>
