@@ -9,16 +9,16 @@ public class BungieResponse<T> where T : class
     public T? Response { get; set; }
 
     [JsonPropertyName("ErrorCode")]
-    public PlatformErrorCode ErrorCode { get; set; }
+    public required  PlatformErrorCode ErrorCode { get; set; }
 
     [JsonPropertyName("ThrottleSeconds")]
-    public ulong ThrottleSeconds { get; set; }
+    public required ulong ThrottleSeconds { get; set; }
 
     [JsonPropertyName("Message")]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 
     [JsonPropertyName("MessageData")]
-    public Dictionary<string, string> MessageData { get; set; }
+    public required Dictionary<string, string> MessageData { get; set; }
 
 
     public bool IsThrottled()
