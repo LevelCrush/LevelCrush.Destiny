@@ -22,6 +22,14 @@ public class DestinyManifestTest
     public async Task TestManifest()
     {
         var manifest = await DestinyManifest.Get<DestinyActivityDefinition>();
-        Assert.That(1, Is.EqualTo(1));
+        Assert.That(manifest, Is.Not.Null);
+        
+        // at the moment the only way I can think of to just test this is to just check for a constant activity that we know about ahead of time
+        // there is probably a better way though, but for now this is good enough
+
+        // from inspecting the request, this id matches the Daily Heroic Story mission activity key
+        var targetActivity = "129918239";
+        Assert.That(manifest.ContainsKey(targetActivity), Is.True);
+
     }
 }

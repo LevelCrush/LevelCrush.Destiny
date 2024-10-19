@@ -14,7 +14,7 @@ public class DestinyManifestResponse
         get;
         set;
     }
-    
-    [JsonPropertyName("locale")]
-    public string? Locale { get; set; }
+
+    [JsonPropertyName("locale")] 
+    public string Locale { get; set; } = "en";
 }
