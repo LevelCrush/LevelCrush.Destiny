@@ -56,4 +56,17 @@ public class DestinyManifestTest
         Assert.That(definition.ContainsKey(targetKey), Is.True);
         
     }
+    
+    [Test]
+    public async Task TestSeasonDefinition()
+    {
+        var definition = await DestinyManifest.Get<DestinySeasonDefinition>();
+        Assert.That(definition, Is.Not.Null);
+        
+        // target key is Season 24, Episode Echos. A type we know will be present
+        // there is probably a better way, but for now this works
+        var targetKey = "2758726572";
+        Assert.That(definition.ContainsKey(targetKey), Is.True);
+        
+    }
 }
