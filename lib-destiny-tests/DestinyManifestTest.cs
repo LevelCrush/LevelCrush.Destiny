@@ -19,17 +19,30 @@ public class DestinyManifestTest
     }
 
     [Test]
-    public async Task TestManifest()
+    public async Task TestActivityDefinition()
     {
-        var manifest = await DestinyManifest.Get<DestinyActivityDefinition>();
-        Assert.That(manifest, Is.Not.Null);
+        var definition = await DestinyManifest.Get<DestinyActivityDefinition>();
+        Assert.That(definition, Is.Not.Null);
         
         // at the moment the only way I can think of to just test this is to just check for a constant activity that we know about ahead of time
         // there is probably a better way though, but for now this is good enough
 
         // from inspecting the request, this id matches the Daily Heroic Story mission activity key
         var targetActivity = "129918239";
-        Assert.That(manifest.ContainsKey(targetActivity), Is.True);
+        Assert.That(definition.ContainsKey(targetActivity), Is.True);
+
+    }
+    
+    [Test]
+    public async Task TestClassDefinition()
+    {
+        var definition = await DestinyManifest.Get<DestinyClassDefinition>();
+        Assert.That(definition, Is.Not.Null);
+        
+        // we know there are 3 classes
+        // for now this is ok. But we should expand this to be more explicit eventually
+       Assert.That(definition.Count, Is.EqualTo(3));
+       
 
     }
 }

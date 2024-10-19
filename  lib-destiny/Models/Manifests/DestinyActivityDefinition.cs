@@ -5,9 +5,6 @@ using Destiny.Attributes;
 
 namespace Destiny.Models.Manifests;
 
-// type alias
-using DestinyActivityDefinitionMap = ConcurrentDictionary<string, DestinyActivityDefinition>;
-
 [DestinyDefinition("DestinyActivityDefinition")]
 public class DestinyActivityDefinition
 {
