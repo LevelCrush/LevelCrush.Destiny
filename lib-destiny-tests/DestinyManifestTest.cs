@@ -42,7 +42,18 @@ public class DestinyManifestTest
         // we know there are 3 classes
         // for now this is ok. But we should expand this to be more explicit eventually
        Assert.That(definition.Count, Is.EqualTo(3));
-       
-
+    }
+    
+    [Test]
+    public async Task TestActivityTypeDefinition()
+    {
+        var definition = await DestinyManifest.Get<DestinyActivityTypeDefinition>();
+        Assert.That(definition, Is.Not.Null);
+        
+        // target key is Momentum Control. A type we know will be present
+        // there is probably a better way, but for now this works
+        var targetKey = "3610972626";
+        Assert.That(definition.ContainsKey(targetKey), Is.True);
+        
     }
 }
