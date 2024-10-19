@@ -1,8 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Reflection;
+using Destiny.Attributes;
 using Destiny.Converters;
 using Destiny.Models.Enums;
 using Destiny.Models.Responses;
 using RestSharp;
+using RestSharp.Extensions;
 
 namespace Destiny.Api;
 
@@ -22,7 +25,7 @@ public static class DestinyManifest
         }
     }
     
-    public static async Task<T?> Get<T>(DestinyDefinition definition) where T: class
+    public static async Task<ConcurrentDictionary<string, T>?> Get<T>() where T: class, new()
     {
         if (_manifestResponse == null)
         {
@@ -34,14 +37,13 @@ public static class DestinyManifest
             return null;
         }
 
-        var defConverter = new DestinyDefinitionConverter();
-        var def = defConverter.ConvertTo(definition, typeof(string));
+        var def = typeof(T).GetCustomAttribute(typeof(DestinyDefinitionAttribute), true);
         if (def == null)
         {
             return null;
         }
 
-        string converted = (string)def;
+        string converted = ((DestinyDefinitionAttribute)def).DefinitionName;
 
         _manifestResponse.JsonWorldComponentContentPath.TryGetValue(_manifestResponse.Locale == null
                 ? "en"
@@ -58,7 +60,7 @@ public static class DestinyManifest
         
         var endpoint = $"https://bungie.net{contentPath}";
         var request = new RestRequest(endpoint, Method.Get);
-        var response = await BungieClient.Client.GetAsync<T>(request);
+        var response = await BungieClient.Client.GetAsync<ConcurrentDictionary<string, T>>(request);
         
         return response;
 
