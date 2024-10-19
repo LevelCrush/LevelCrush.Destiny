@@ -69,4 +69,17 @@ public class DestinyManifestTest
         Assert.That(definition.ContainsKey(targetKey), Is.True);
         
     }
+    
+    [Test]
+    public async Task TestRecordDefinition()
+    {
+        var definition = await DestinyManifest.Get<DestinyRecordDefinition>();
+        Assert.That(definition, Is.Not.Null);
+        
+        // target key is for Solar Rush record/triumph. A type we know will be present
+        // there is probably a better way, but for now this works
+        var targetKey = "3893443260";
+        Assert.That(definition.ContainsKey(targetKey), Is.True);
+        
+    }
 }
