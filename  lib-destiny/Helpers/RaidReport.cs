@@ -12,7 +12,7 @@ public static class RaidReport
     /// <param name="membershipId"></param>
     /// <param name="membershipType"></param>
     /// <returns>A URL String that would corrospond to the individuals raid report</returns>
-    public static string GenerateUrl(string membershipId, BungieMembershipType membershipType)
+    public static string GenerateUrl(long membershipId, BungieMembershipType membershipType)
     {
         string membershipTypeName = membershipType switch
         {

@@ -14,8 +14,8 @@ public class DestinyProfileResponse
     /// Records the timestamp of when most components were last generated from the world server source.
     /// Unless the component type is specified in the documentation for secondaryComponentsMintedTimestamp,
     /// this value is sufficient to do data freshness.
-    [DataMember(Name = "responseMintedTimestamp", EmitDefaultValue = true)]
-    public string TimestampResponse { get; set; }
+    [JsonPropertyName("responseMintedTimestamp")]
+    public DateTime TimestampResponse { get; set; } = DateTime.UnixEpoch;
 
     /// Some secondary components are not tracked in the primary response timestamp and have their timestamp tracked here. If your component is any of the following, this field is where you will find your timestamp value:
     /// 
@@ -23,7 +23,7 @@ public class DestinyProfileResponse
     /// 
     /// All other component types may use the primary timestamp property.
     [JsonPropertyName("secondaryComponentsMintedTimestamp")]
-    public string TimestampSecondaryComponents { get; set; }
+    public DateTime TimestampSecondaryComponents { get; set; } = DateTime.UnixEpoch;
 
     [JsonPropertyName("profile")]
     public DestinyComponent<DestinyProfileComponent>? Profile { get; set; }

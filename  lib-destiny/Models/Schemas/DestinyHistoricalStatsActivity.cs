@@ -9,13 +9,13 @@ namespace Destiny.Models.Schemas;
 public class DestinyHistoricalStatsActivity
 {
     [JsonPropertyName("referenceId")]
-    public string ReferenceId { get; set; }
+    public uint ReferenceId { get; set; }
     
     [JsonPropertyName("directorActivityHash")]
     public uint DirectorActivityHash { get; set; }
     
     [JsonPropertyName("instanceId")]
-    public string InstanceId { get; set; }
+    public long InstanceId { get; set; }
     
     [JsonPropertyName("isPrivate")]
     public bool IsPrivate { get; set; }

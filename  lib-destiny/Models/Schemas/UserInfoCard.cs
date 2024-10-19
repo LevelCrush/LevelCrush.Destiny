@@ -12,7 +12,7 @@ public class UserInfoCard
     public BungieMembershipType CrossSaveOverride { get; set; }
 
     [JsonPropertyName("membershipId")]
-    public string MembershipId { get; set; }
+    public long MembershipId { get; set; }
 
     [JsonPropertyName("membershipType")]
     public BungieMembershipType MembershipType { get; set; }

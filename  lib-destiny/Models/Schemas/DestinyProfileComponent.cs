@@ -8,14 +8,14 @@ namespace Destiny.Models.Schemas;
 /// **Source** [Bungie Documentation](https://bungie-net.github.io/#/components/schemas/Destiny.Entities.Profiles.DestinyProfileComponent)
 public class DestinyProfileComponent
 {
-    [JsonPropertyName("dateLastPlayed")]
-    public string DateLastPlayed { get; set; }
+    [JsonPropertyName("dateLastPlayed")] 
+    public DateTime DateLastPlayed { get; set; } = DateTime.UnixEpoch;
 
     [JsonPropertyName("userInfo")]
     public UserInfoCard UserInfo { get; set; }
 
     [JsonPropertyName("characterIds")]
-    public string[] Characters { get; set; }
+    public long[] Characters { get; set; }
 
     [DataMember(Name = "seasonHashes", IsRequired = false)]
     public uint[] SeasonHashes { get; set; }

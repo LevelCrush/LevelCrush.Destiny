@@ -5,8 +5,8 @@ namespace Destiny.Models.Schemas;
 
 public class DestinyHistoricalStatsPeriodGroup
 {
-    [JsonPropertyName("period")]
-    public string Period { get; set; }
+    [JsonPropertyName("period")] 
+    public DateTime Period { get; set; } = DateTime.UnixEpoch;
     
     [JsonPropertyName("values")]
     public ConcurrentDictionary<string, DestinyHistoricalStatsValue> Values { get; set; }

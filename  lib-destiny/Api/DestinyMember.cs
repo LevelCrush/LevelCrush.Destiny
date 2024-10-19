@@ -8,6 +8,40 @@ namespace Destiny.Api;
 
 public static class DestinyMember
 {
+
+
+    public static async Task<UserInfoCard?> MembershipById(long membershipId)
+    {
+        // this seems like a weird design choice...
+        // does it make
+        var membershpiIdString = membershipId.ToString();
+        
+        var req = await BungieClient.Get("/User/GetMembershipsById/{membershipId}/0")
+            .Param(DestinyRouteParam.PlatformMembershipID, membershipId.ToString())
+            .Send<UserMembershipData>();
+
+        if (req.Response != null)
+        {
+            if (req.Response.Memberships.Count == 1)
+            {
+                return req.Response.Memberships.First();
+            }
+            else
+            {
+                foreach (var card in req.Response.Memberships)
+                {
+                    if (card.MembershipId == membershipId)
+                    {
+                        
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    
     /// <summary>
     ///     Explicitly get the profile
     /// </summary>

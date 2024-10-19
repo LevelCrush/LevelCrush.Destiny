@@ -6,16 +6,16 @@ namespace Destiny.Models.Schemas;
 public class DestinyCharacterComponent
 {
     [JsonPropertyName("membershipId")]
-    public string MembershipId { get; set; }
+    public long MembershipId { get; set; }
 
     [JsonPropertyName("membershipType")]
     public BungieMembershipType MembershipType { get; set; }
 
     [JsonPropertyName("characterId")]
-    public string CharacterId { get; set; }
+    public long CharacterId { get; set; }
 
-    [JsonPropertyName("dateLastPlayed")]
-    public string LastPlayed { get; set; }
+    [JsonPropertyName("dateLastPlayed")] 
+    public DateTime LastPlayed { get; set; } = DateTime.UnixEpoch;
 
     [JsonPropertyName("minutesPlayedTotal")]
     public string MinutesPlayedSession { get; set; }
