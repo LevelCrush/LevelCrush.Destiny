@@ -1,14 +1,15 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Destiny.Models.Schemas;
 
-namespace Destiny.Models.Schemas;
+namespace Destiny.Models.Responses;
 
 /// The response for GetDestinyProfile, with components for character and item-level data.
 /// 
 /// **Note**: This does not contain all available properties of a full Destiny Profile response. Only what we need
 /// 
 /// **Source**: [Bungie Official Documentation](https://bungie-net.github.io/#/components/schemas/Destiny.Responses.DestinyProfileResponse)
-public class DestinyProfileResposne
+public class DestinyProfileResponse
 {
     /// Records the timestamp of when most components were last generated from the world server source.
     /// Unless the component type is specified in the documentation for secondaryComponentsMintedTimestamp,

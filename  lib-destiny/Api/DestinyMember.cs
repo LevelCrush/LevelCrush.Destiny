@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Destiny.Models.Enums;
 using Destiny.Models.Requests;
+using Destiny.Models.Responses;
 using Destiny.Models.Schemas;
 
 namespace Destiny.Api;
@@ -13,7 +14,7 @@ public static class DestinyMember
     /// <param name="membershipId"></param>
     /// <param name="membershipType"></param>
     /// <returns></returns>
-    public static async Task<DestinyProfileResposne?> Profile(long membershipId, int membershipType)
+    public static async Task<DestinyProfileResponse?> Profile(long membershipId, int membershipType)
     {
         var req = await BungieClient.Get("/Destiny2/{membershipType}/Profile/{membershipId}/")
             .Param(DestinyRouteParam.PlatformMembershipID, membershipId.ToString())
@@ -21,7 +22,7 @@ public static class DestinyMember
             .Component(DestinyComponentType.Profiles)
             .Component(DestinyComponentType.Characters)
             .Component(DestinyComponentType.Records)
-            .Send<DestinyProfileResposne>();
+            .Send<DestinyProfileResponse>();
 
         return req != null ? req.Response : null;
     }
