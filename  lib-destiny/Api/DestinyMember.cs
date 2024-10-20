@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Destiny.Extensions;
 using Destiny.Models.Enums;
 using Destiny.Models.Requests;
 using Destiny.Models.Responses;
@@ -28,13 +29,21 @@ public static class DestinyMember
             }
             else
             {
+                UserInfoCard? targetCard = null;
                 foreach (var card in req.Response.Memberships)
                 {
                     if (card.MembershipId == membershipId)
                     {
-                        
+                        targetCard = card;
+                        break;
+                    }
+
+                    if(card.MembershipType == card.CrossSaveOverride)
+                    {
+                        targetCard = card;
                     }
                 }
+                return targetCard != null ? targetCard.Clone() : null;
             }
         }
 
@@ -109,7 +118,7 @@ public static class DestinyMember
                 }
             }
 
-            return targetUserCard;
+            return targetUserCard != null ? targetUserCard.Clone() : null;
         }
 
         return null;
