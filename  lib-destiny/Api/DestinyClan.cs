@@ -4,7 +4,7 @@ using Destiny.Models.Schemas;
 
 namespace Destiny.Api;
 
-public class DestinyCan
+public class DestinyClan
 {
     public static async Task<GetGroupsForMemberResponse?> FromMembership(long membershipId,
         BungieMembershipType membershipType)

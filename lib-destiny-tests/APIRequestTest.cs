@@ -1,4 +1,5 @@
 ﻿using Destiny.Api;
+using Destiny.Models.Enums;
 using NuGet.Frameworks;
 
 namespace Destiny.Tests;
@@ -47,5 +48,41 @@ public class APIRequestTest
         var report = await DestinyInstance.CarnageReport(targetInstance );
         
         Assert.That(report, Is.Not.Null);
+    }
+
+    [Test]
+    public async Task TestClanInfo()
+    {
+        // target clan = levelcrush
+        var targetClan = 4356849;
+
+        var info = await DestinyClan.Info(targetClan);
+        Assert.That(info, Is.Not.Null);
+        Assert.That(info.Detail.Name, Is.EqualTo("Level Crush"));
+        Assert.That(info.Detail.ClanInfo.ClanCallsign, Is.EqualTo("LC"));
+    }
+    
+    [Test]
+    public async Task TestClanRoster()
+    {
+        // target clan = levelcrush
+        var targetClan = 4356849;
+
+        var roster = await DestinyClan.Roster(targetClan);
+        Assert.That(roster, Is.Not.Null);
+        Assert.That(roster.Results.Length, Is.GreaterThan(0));
+    }
+
+    [TestCase]
+    public async Task TestFromMembership()
+    {
+        var targetMembership = 4611686018439874403;
+        var targetMembershipType = BungieMembershipType.Xbox;
+
+        var memberGroup = await DestinyClan.FromMembership(targetMembership, targetMembershipType);
+        Assert.That(memberGroup, Is.Not.Null); 
+        
+        Assert.That(memberGroup.Results.Length, Is.GreaterThanOrEqualTo(1));
+        Assert.That(memberGroup.Results.First().Group.Name, Is.EqualTo("Level Crush"));
     }
 }
