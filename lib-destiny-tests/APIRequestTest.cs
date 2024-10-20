@@ -34,7 +34,7 @@ public class APIRequestTest
         Assert.That(user, Is.Not.Null);
         Assert.That(user.Profile, Is.Not.Null);
         Assert.That(user.Profile.Data, Is.Not.Null);
-        
+       
         // compare to test user
         Assert.That(user.Profile.Data.UserInfo.GlobalDisplayName, Is.EqualTo("Primal"));
         Assert.That(user.Profile.Data.UserInfo.GlobalDisplayNameCode, Is.EqualTo(8266));
