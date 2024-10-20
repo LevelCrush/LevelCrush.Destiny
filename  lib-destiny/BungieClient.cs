@@ -8,8 +8,15 @@ public static class BungieClient
 {
     static BungieClient()
     {
-        Client = new RestClient();
+        Client = new RestClient(new RestClientOptions()
+        {
+            FollowRedirects = true,
+        });
         ApiKey = "";
+
+        // expliclity set this
+       // Client.Options.FollowRedirects = true;
+        
     }
 
     public static RestClient Client { get; }

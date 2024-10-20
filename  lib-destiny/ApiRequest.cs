@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Text;
 using System.Web;
 using Destiny.Converters;
@@ -167,6 +168,18 @@ public class ApiRequest<TRequestBody> where TRequestBody : class
 
 
         var res = await _client.ExecuteAsync<BungieResponse<TResponse>>(req);
+        // our request **should** be auto followed but sometimes restsharp does not auto follow for some reason
+        // this handles the redirects that Bungie has in place for some of their endpoints like stats.
+        // there could be some optimization before this where if we know the endpoint coming in before hand we can just swap it out on other similiar endpoint calls
+        if (res.Headers != null && res.StatusCode == HttpStatusCode.MovedPermanently) 
+        {
+            var redirect = res.Headers.First(headerParameter => headerParameter.Name == "Location").Value
+                .Replace("http://", "https://");
+            
+            req.Resource = redirect;
+            
+            res = await _client.ExecuteAsync<BungieResponse<TResponse>>(req);
+        }
         return res.IsSuccessful ? res.Data : null;
     }
 

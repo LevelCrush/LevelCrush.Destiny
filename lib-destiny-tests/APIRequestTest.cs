@@ -39,4 +39,13 @@ public class APIRequestTest
         Assert.That(user.Profile.Data.UserInfo.GlobalDisplayName, Is.EqualTo("Primal"));
         Assert.That(user.Profile.Data.UserInfo.GlobalDisplayNameCode, Is.EqualTo(8266));
     }
+
+    [Test]
+    public async Task TestCarnageReport()
+    {
+        var targetInstance = 9472769153; // 12329004052
+        var report = await DestinyInstance.CarnageReport(targetInstance );
+        
+        Assert.That(report, Is.Not.Null);
+    }
 }
