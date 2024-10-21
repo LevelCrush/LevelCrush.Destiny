@@ -64,4 +64,13 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="appsettings.test.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
