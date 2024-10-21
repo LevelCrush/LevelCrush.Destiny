@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Tasks", "Rasputin-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Server", "Rasputin-Server\Rasputin-Server.csproj", "{A268B222-222D-4305-A4E5-C1BBE302F4A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Database", "Rasputin-Database\Rasputin-Database.csproj", "{AFB9BDA0-5975-4F3A-A7CC-59889981D969}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{A268B222-222D-4305-A4E5-C1BBE302F4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A268B222-222D-4305-A4E5-C1BBE302F4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A268B222-222D-4305-A4E5-C1BBE302F4A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB9BDA0-5975-4F3A-A7CC-59889981D969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB9BDA0-5975-4F3A-A7CC-59889981D969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB9BDA0-5975-4F3A-A7CC-59889981D969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB9BDA0-5975-4F3A-A7CC-59889981D969}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
