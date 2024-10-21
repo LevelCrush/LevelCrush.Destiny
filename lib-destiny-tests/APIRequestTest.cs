@@ -74,7 +74,7 @@ public class APIRequestTest
     }
 
     [TestCase]
-    public async Task TestFromMembership()
+    public async Task TestClanFromMembership()
     {
         var targetMembership = 4611686018439874403;
         var targetMembershipType = BungieMembershipType.Xbox;
@@ -84,5 +84,31 @@ public class APIRequestTest
         
         Assert.That(memberGroup.Results.Length, Is.GreaterThanOrEqualTo(1));
         Assert.That(memberGroup.Results.First().Group.Name, Is.EqualTo("Level Crush"));
+    }
+
+    [Test]
+    public async Task TestActivityForCharacter()
+    {
+        var targetMembership = 4611686018439874403;
+        var targetMembershipType = BungieMembershipType.Xbox;
+        var targetCharacterId = 2305843009733485591;
+
+        var activities = await DestinyActivity.ForCharacter(targetMembership, targetMembershipType, targetCharacterId);
+        Assert.That(activities.Length, Is.GreaterThan(0));
+        
+        
+    }
+
+    [Test]
+    public async Task TestActivityStatsForMember()
+    {
+        var targetMembership = 4611686018439874403;
+        var targetMembershipType = BungieMembershipType.Xbox;
+        var targetCharacterId = 2305843009733485591;
+
+        var activities = await DestinyActivity.StatsForMember(targetMembership, targetMembershipType);
+        Assert.That(activities, Is.Not.Null);
+        
+        
     }
 }

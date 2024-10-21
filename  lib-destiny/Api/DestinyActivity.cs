@@ -7,7 +7,7 @@ namespace Destiny.Api;
 public class DestinyActivity
 {
 
-    public static async Task<DestinyHistoricalStatsAccountResult> FromMember(long membershipId,
+    public static async Task<DestinyHistoricalStatsAccountResult?> StatsForMember(long membershipId,
         BungieMembershipType membershipType)
     {
         var req = await BungieClient.Get("/Destiny2/{membershipType}/Account/{membershipId}/Stats/")
@@ -18,7 +18,7 @@ public class DestinyActivity
         return req != null ? req.Response : null;
     }
 
-    public static async Task<DestinyActivityHistoryResults?> ActivityPage(long membershipId,
+    public static async Task<DestinyActivityHistoryResults?> CharacterActivityPage(long membershipId,
         BungieMembershipType membershipType, long characterId, uint page, uint resultsPerPage = 250)
     {
 
@@ -43,7 +43,7 @@ public class DestinyActivity
 
         uint page = 0;
         DestinyActivityHistoryResults? activityPage = null;
-        while((activityPage = await  ActivityPage(membershipId,membershipType,characterId,page)) != null)
+        while((activityPage = await  CharacterActivityPage(membershipId,membershipType,characterId,page)) != null)
         {
             uint foundActivities = 0;
             foreach (var activity in activityPage.Activities)

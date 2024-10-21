@@ -7,6 +7,5 @@ namespace Destiny.Models.Schemas;
 /// **Source** [Bungie Documentation](https://bungie-net.github.io/#Destiny2.GetActivityHistory)
 public class DestinyActivityHistoryResults
 {
-    [JsonPropertyName("activities")]
-    public DestinyHistoricalStatsPeriodGroup[] Activities { get; set; }
+    [JsonPropertyName("activities")] public DestinyHistoricalStatsPeriodGroup[] Activities { get; set; } = [];
 }
