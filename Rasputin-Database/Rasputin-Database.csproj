@@ -2,9 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RootNamespace>Rasputin_Database</RootNamespace>
+        <RootNamespace>Rasputin.Database</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj" />
+    </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Rasputin_Database;
+﻿namespace Rasputin.Database;
 
 public class Class1
 {

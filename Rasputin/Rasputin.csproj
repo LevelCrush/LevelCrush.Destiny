@@ -75,6 +75,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj" />
+      <ProjectReference Include="..\Rasputin-Server\Rasputin-Server.csproj" />
       <ProjectReference Include="..\Rasputin-Tasks\Rasputin-Tasks.csproj" />
     </ItemGroup>
 

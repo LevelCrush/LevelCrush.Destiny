@@ -1,4 +1,4 @@
-﻿namespace Rasputin_Tasks;
+﻿namespace Rasputin.Tasks;
 
 public class Class1
 {
