@@ -2,17 +2,48 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 namespace Rasputin.Database.Models;
 
 public partial class DBDestinyContext : DbContext
 {
+    private RasputinDatabaseConfig _config;
+    
+    public DBDestinyContext()
+    {
+        _config = RasputinDatabaseConfig.Load();
+    }
+    
     public DBDestinyContext(DbContextOptions<DBDestinyContext> options)
         : base(options)
     {
+        _config = RasputinDatabaseConfig.Load();
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (_config.Type == "MySql")
+        {
+            var builder = new MySqlConnectionStringBuilder();
+            builder.Server = _config.Host;
+            builder.Database = _config.Database;
+            builder.UserID = _config.Username;
+            builder.Password = _config.Password;
+            builder.Port = _config.Port;
+            var connectionString = builder.ToString();
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
+        else
+        {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder(_config.Database + ".db");
+            connectionStringBuilder.DataSource = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, connectionStringBuilder.DataSource);
+            optionsBuilder.UseSqlite(connectionStringBuilder.ToString());
+        } 
+    }
+        
     public virtual DbSet<Clan> Clans { get; set; }
 
     public virtual DbSet<ClanMember> ClanMembers { get; set; }
