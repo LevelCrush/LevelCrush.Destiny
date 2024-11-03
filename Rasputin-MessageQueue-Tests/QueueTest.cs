@@ -17,6 +17,24 @@ public class Tests
     }
 
     [Test]
+    public async Task TestConsumer()
+    {
+        QueueClan.Connect();
+
+
+        var messagesAck = 0;
+        var consumerTag = QueueClan.Subscribe(async clan =>
+        {
+            Assert.That(clan, Is.Not.Null);
+            TestContext.WriteLine($"Message Received:{++messagesAck}");
+        });
+        
+        
+        QueueClan.Disconnect();
+        RasputinMessageQueue.Disconnect();
+    }
+
+    [Test]
     public void TestPublishClan()
     {
 

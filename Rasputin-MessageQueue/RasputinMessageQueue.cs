@@ -24,6 +24,8 @@ public static class RasputinMessageQueue
             _factory.HostName = _config.Host;
             _factory.VirtualHost = _config.VirtualHost;
             _factory.ClientProvidedName = _config.ClientName;
+            _factory.DispatchConsumersAsync = true;
+            _factory.AutomaticRecoveryEnabled = true;
         }
 
         // no matter what, we will always establish a reusable connection 
