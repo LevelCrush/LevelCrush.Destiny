@@ -19,7 +19,7 @@ public static class QueueClan
     {
         if (_connection == null)
         {
-            _connection = MessageQueueClient.Connect();
+            _connection = RasputinMessageQueue.Connect();
         }
 
         if (_channel == null)
@@ -28,7 +28,7 @@ public static class QueueClan
         }
         
         // declare queues and exchanges
-        _channel.ExchangeDeclare(TARGET_EXCHANGE, ExchangeType.Direct);
+        _channel.ExchangeDeclare(TARGET_EXCHANGE, ExchangeType.Direct, true);
         _channel.QueueDeclare(TARGET_QUEUE, true, false, false, null);
         _channel.QueueBind(TARGET_QUEUE,TARGET_EXCHANGE, TARGET_ROUTING_KEY, null);
     }

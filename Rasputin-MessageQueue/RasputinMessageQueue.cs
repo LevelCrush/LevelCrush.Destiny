@@ -2,7 +2,7 @@
 
 namespace Rasputin.MessageQueue;
 
-public static class MessageQueueClient
+public static class RasputinMessageQueue
 {
     private static ConnectionFactory? _factory;
     private static RasputinMessageQueueConfig? _config;
