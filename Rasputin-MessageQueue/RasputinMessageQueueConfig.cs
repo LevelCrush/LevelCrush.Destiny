@@ -20,6 +20,9 @@ public class RasputinMessageQueueConfig
     
     [DataMember]
     public string VirtualHost { get; set; } = "/";
+
+    [DataMember] 
+    public string ClientName { get; set; } = "Rasputin";
     
     public static RasputinMessageQueueConfig Load()
     {
