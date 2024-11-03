@@ -6,8 +6,9 @@ public static class MessageQueueClient
 {
     private static ConnectionFactory? _factory;
     private static RasputinMessageQueueConfig? _config;
+    private static IConnection? _connection;
     
-    private static IConnection Connect()
+    private static IConnection Connect(bool reuse = true)
     {
         if (_config == null)
         {
@@ -24,7 +25,14 @@ public static class MessageQueueClient
             _factory.VirtualHost = _config.VirtualHost;
             _factory.ClientProvidedName = _config.ClientName;
         }
-        
-        return _factory.CreateConnection();
+
+        // no matter what, we will always establish a reusable connection 
+        // even if we dont return it the first time, that's fine
+        if (_connection == null)
+        {
+            _connection = _factory.CreateConnection();
+        }
+
+        return reuse ? _connection : _factory.CreateConnection();
     }
 }
