@@ -8,7 +8,7 @@ public static class MessageQueueClient
     private static RasputinMessageQueueConfig? _config;
     private static IConnection? _connection;
     
-    private static IConnection Connect(bool reuse = true)
+    public static IConnection Connect(bool reuse = true)
     {
         if (_config == null)
         {
@@ -34,5 +34,15 @@ public static class MessageQueueClient
         }
 
         return reuse ? _connection : _factory.CreateConnection();
+    }
+
+
+    public static void Disconnect()
+    {
+        if (_connection != null)
+        {
+            _connection.Close();
+            _connection = null;
+        }
     }
 }
