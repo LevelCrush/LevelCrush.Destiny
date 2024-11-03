@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Database", "Rasput
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Server", "Rasputin-Server\Rasputin-Server.csproj", "{8F29821B-0F1A-4726-A548-2B05FAF1EB82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-MessageQueue", "Rasputin-MessageQueue\Rasputin-MessageQueue.csproj", "{06689887-E0DA-41F4-AF8E-C9A3952F10D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{8F29821B-0F1A-4726-A548-2B05FAF1EB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F29821B-0F1A-4726-A548-2B05FAF1EB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F29821B-0F1A-4726-A548-2B05FAF1EB82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06689887-E0DA-41F4-AF8E-C9A3952F10D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06689887-E0DA-41F4-AF8E-C9A3952F10D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06689887-E0DA-41F4-AF8E-C9A3952F10D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06689887-E0DA-41F4-AF8E-C9A3952F10D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
