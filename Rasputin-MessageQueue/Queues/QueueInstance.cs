@@ -7,14 +7,14 @@ using Rasputin.MessageQueue.Models;
 
 namespace Rasputin.MessageQueue.Queues;
 
-public static class QueueMember
+public static class QueueInstance
 {
 
     private static IConnection? _connection;
     private static IModel? _channel;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
-    private const string TARGET_QUEUE = "rasputin.members";
+    private const string TARGET_QUEUE = "rasputin.instances";
     private const string TARGET_ROUTING_KEY = TARGET_QUEUE; // since we are going direct, juse use the queue name
     public static void Connect()
     {
@@ -59,7 +59,7 @@ public static class QueueMember
     }
 
 
-    public static string Subscribe(Func<MessageMember?, Task> processCallback)
+    public static string Subscribe(Func<MessageInstance?, Task> processCallback)
     {
         if (_channel == null)
         {
@@ -71,7 +71,7 @@ public static class QueueMember
         {
             // deserialize
             var body = ea.Body.ToArray();
-            var message = JsonSerializer.Deserialize<MessageMember>(body);
+            var message = JsonSerializer.Deserialize<MessageInstance>(body);
             
             // processs
             await processCallback(message);
@@ -84,7 +84,7 @@ public static class QueueMember
         return consumerTag;
     }
 
-    public static MessageMember? Pull()
+    public static MessageInstance? Pull()
     {
         if (_channel == null)
         {
@@ -101,7 +101,7 @@ public static class QueueMember
         {
             var props = result.BasicProperties;
             var body = result.Body.ToArray();
-            return JsonSerializer.Deserialize<MessageMember>(body);
+            return JsonSerializer.Deserialize<MessageInstance>(body);
         }
     }
     
