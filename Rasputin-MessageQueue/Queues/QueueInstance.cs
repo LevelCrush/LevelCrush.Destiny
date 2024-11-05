@@ -11,7 +11,7 @@ public static class QueueInstance
 {
 
 
-    private static readonly QueueBase<MessageInstance> _queue;
+    private static readonly QueueBaseDirectJson<MessageInstance> _queue;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
     private const string TARGET_QUEUE = "rasputin.instances";
@@ -19,7 +19,7 @@ public static class QueueInstance
 
     static QueueInstance()
     {
-        _queue = new QueueBase<MessageInstance>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
+        _queue = new QueueBaseDirectJson<MessageInstance>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
             
     }
     

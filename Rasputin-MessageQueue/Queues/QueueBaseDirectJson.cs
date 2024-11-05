@@ -6,7 +6,7 @@ using Rasputin.MessageQueue.Models;
 
 namespace Rasputin.MessageQueue.Queues;
 
-public class QueueBase<MessageModel> where MessageModel : class
+public class QueueBaseDirectJson<MessageModel> where MessageModel : class
 {
     protected static IConnection? _connection;
     protected static IModel? _channel;
@@ -16,7 +16,7 @@ public class QueueBase<MessageModel> where MessageModel : class
     private  string _targetQueue = "rasputin.queue";
     private  string _targetRoutingKey = "rasputin.routing_key"; // direct mode
 
-    public QueueBase(string targetExchange, string targetQueue, string routingKey)
+    public QueueBaseDirectJson(string targetExchange, string targetQueue, string routingKey)
     {
         _targetExchange = targetExchange;
         _targetQueue = targetQueue;

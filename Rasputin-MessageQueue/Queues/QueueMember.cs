@@ -10,7 +10,7 @@ namespace Rasputin.MessageQueue.Queues;
 public static class QueueMember
 {
 
-    private static readonly QueueBase<MessageMember> _queue;
+    private static readonly QueueBaseDirectJson<MessageMember> _queue;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
     private const string TARGET_QUEUE = "rasputin.members";
@@ -19,7 +19,7 @@ public static class QueueMember
 
     static QueueMember()
     {
-        _queue = new QueueBase<MessageMember>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
+        _queue = new QueueBaseDirectJson<MessageMember>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
     }
     
     

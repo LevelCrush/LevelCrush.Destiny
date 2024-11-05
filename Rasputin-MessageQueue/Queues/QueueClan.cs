@@ -10,7 +10,7 @@ namespace Rasputin.MessageQueue.Queues;
 public static class QueueClan
 {
 
-    private static readonly QueueBase<MessageClan> _queue;
+    private static readonly QueueBaseDirectJson<MessageClan> _queue;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
     private const string TARGET_QUEUE = "rasputin.clans";
@@ -18,7 +18,7 @@ public static class QueueClan
 
     static QueueClan()
     {
-        _queue = new QueueBase<MessageClan>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
+        _queue = new QueueBaseDirectJson<MessageClan>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
     }
     
     public static void Connect()
