@@ -6,7 +6,7 @@ using Rasputin.MessageQueue.Models;
 
 namespace Rasputin.MessageQueue.Queues;
 
-public class QueueBaseDirectJson<MessageModel> where MessageModel : class
+public class QueueBaseDirectJson<TMessageModel> where TMessageModel : class
 {
     protected static IConnection? _connection;
     protected static IModel? _channel;
@@ -51,7 +51,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
         }
     }
     
-    public  void Publish(MessageModel message)
+    public  void Publish(TMessageModel message)
     {
         if (_channel == null)
         {
@@ -67,7 +67,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
     }
 
 
-    public  string Subscribe(Func<MessageModel?, Task> processCallback)
+    public  string Subscribe(Func<TMessageModel?, Task> processCallback)
     {
         if (_channel == null)
         {
@@ -79,7 +79,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
         {
             // deserialize
             var body = ea.Body.ToArray();
-            var message = JsonSerializer.Deserialize<MessageModel>(body);
+            var message = JsonSerializer.Deserialize<TMessageModel>(body);
             
             // processs
             await processCallback(message);
@@ -92,7 +92,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
         return consumerTag;
     }
 
-    public  MessageModel? Pull()
+    public  TMessageModel? Pull()
     {
         if (_channel == null)
         {
@@ -109,7 +109,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
         {
             var props = result.BasicProperties;
             var body = result.Body.ToArray();
-            return JsonSerializer.Deserialize<MessageModel>(body);
+            return JsonSerializer.Deserialize<TMessageModel>(body);
         }
     }
     
