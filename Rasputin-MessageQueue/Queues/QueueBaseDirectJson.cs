@@ -10,8 +10,7 @@ public class QueueBaseDirectJson<MessageModel> where MessageModel : class
 {
     protected static IConnection? _connection;
     protected static IModel? _channel;
-
-
+    
     private  string _targetExchange = "rasputin.direct";
     private  string _targetQueue = "rasputin.queue";
     private  string _targetRoutingKey = "rasputin.routing_key"; // direct mode
