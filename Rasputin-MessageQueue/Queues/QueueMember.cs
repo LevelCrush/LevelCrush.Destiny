@@ -10,99 +10,43 @@ namespace Rasputin.MessageQueue.Queues;
 public static class QueueMember
 {
 
-    private static IConnection? _connection;
-    private static IModel? _channel;
+    private static readonly QueueBase<MessageMember> _queue;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
     private const string TARGET_QUEUE = "rasputin.members";
     private const string TARGET_ROUTING_KEY = TARGET_QUEUE; // since we are going direct, juse use the queue name
+
+
+    static QueueMember()
+    {
+        _queue = new QueueBase<MessageMember>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
+    }
+    
+    
     public static void Connect()
     {
-        if (_connection == null)
-        {
-            _connection = RasputinMessageQueue.Connect();
-        }
-
-        if (_channel == null)
-        {
-            _channel = _connection.CreateModel();
-        }
-        
-        // declare queues and exchanges
-        _channel.ExchangeDeclare(TARGET_EXCHANGE, ExchangeType.Direct, true);
-        _channel.QueueDeclare(TARGET_QUEUE, true, false, false, null);
-        _channel.QueueBind(TARGET_QUEUE,TARGET_EXCHANGE, TARGET_ROUTING_KEY, null);
+        _queue.Connect();
     }
 
     public static void Disconnect()
     {
-        if (_channel != null)
-        {
-            _channel.Close();
-            _channel = null;
-        }
+       _queue.Disconnect();
     }
     
     public static void Publish(MessageMember message)
     {
-        if (_channel == null)
-        {
-            Connect();
-        }
-
-        var serializedMessage = JsonSerializer.Serialize(message);
-        var bytes = Encoding.UTF8.GetBytes(serializedMessage);
-        var properties = _channel.CreateBasicProperties(); 
-        properties.ContentType = "application/json";
-        properties.DeliveryMode = 2;
-        _channel.BasicPublish(TARGET_EXCHANGE, TARGET_ROUTING_KEY, properties, bytes);
+        _queue.Publish(message);
     }
 
 
     public static string Subscribe(Func<MessageMember?, Task> processCallback)
     {
-        if (_channel == null)
-        {
-            Connect();
-        }
-
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received += async (model, ea) =>
-        {
-            // deserialize
-            var body = ea.Body.ToArray();
-            var message = JsonSerializer.Deserialize<MessageMember>(body);
-            
-            // processs
-            await processCallback(message);
-            
-            // yield
-            await Task.Yield();
-        };
-
-        string consumerTag = _channel.BasicConsume(TARGET_QUEUE, true, consumer);
-        return consumerTag;
+       return _queue.Subscribe(processCallback);
     }
 
     public static MessageMember? Pull()
     {
-        if (_channel == null)
-        {
-            Connect();
-        }
-
-        var result = _channel.BasicGet(TARGET_QUEUE, true);
-        if (result == null)
-        {
-            // no message
-            return null;
-        }
-        else
-        {
-            var props = result.BasicProperties;
-            var body = result.Body.ToArray();
-            return JsonSerializer.Deserialize<MessageMember>(body);
-        }
+        return _queue.Pull();
     }
     
     
