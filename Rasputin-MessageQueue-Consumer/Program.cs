@@ -1,19 +1,29 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
-
 using System.CommandLine;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Rasputin.MessageQueue;
+using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
 
+
+void Log(string message, int level = 0)
+{
+    Console.WriteLine(message);
+}
 
 void ConsumeMemberQueue()
 {
     QueueMember.Subscribe(async (member) =>
     {
-        // process
+        if (member != null)
+        {
+            await ConsumerMember.Process(member);
+        }
+        else
+        {
+            Log("Received a null member. Deserialization may of gone wrong");
+        }
     });
 }
 
@@ -21,7 +31,14 @@ void ConsumeClanQueue()
 {
     QueueClan.Subscribe(async (clan) =>
     {
-        // process
+        if (clan != null)
+        {
+            await ConsumerClan.Process(clan);
+        }
+        else
+        {
+            Log("Received a null clan. Deserialization may of gone wrong");
+        }
     });
 }
 
@@ -29,7 +46,14 @@ void ConsumeInstanceQueue()
 {
     QueueInstance.Subscribe(async (instance) =>
     {
-        // process
+        if (instance != null)
+        {
+            await ConsumerInstance.Process(instance);
+        }
+        else
+        {
+            Log("Received a null instance. Deserialization may of gone wrong");
+        }
     });
 }
 
@@ -51,6 +75,7 @@ rootCommand.SetHandler((queue) =>
             ConsumeMemberQueue();
             break;
         case "clan":
+            ConsumeClanQueue();
             break;
         case "instance":
         default:
