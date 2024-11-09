@@ -22,6 +22,8 @@ public static class ConsumerMember
 
     private static async Task<Dictionary<string, bool>> TaskInfo(string[] entities)
     {
-        
+        var result = new Dictionary<string, bool>();
+
+        return result;
     }
 }
