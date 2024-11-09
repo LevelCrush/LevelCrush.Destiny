@@ -1,58 +1,58 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.CommandLine;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Rasputin.MessageQueue;
 using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
 
 
-void Log(string message, int level = 0)
-{
-    Console.WriteLine(message);
-}
 
 void ConsumeMemberQueue()
 {
-    QueueMember.Subscribe(async (member) =>
+    QueueMember.Subscribe(async (message) =>
     {
-        if (member != null)
+        if (message != null)
         {
-            await ConsumerMember.Process(member);
+            LoggerGlobal.Write($"Member Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerMember.Process(message);
         }
         else
         {
-            Log("Received a null member. Deserialization may of gone wrong");
+            LoggerGlobal.Write("Received a null member. Deserialization may of gone wrong");
         }
     });
 }
 
 void ConsumeClanQueue()
 {
-    QueueClan.Subscribe(async (clan) =>
+    QueueClan.Subscribe(async (message) =>
     {
-        if (clan != null)
+        if (message != null)
         {
-            await ConsumerClan.Process(clan);
+            LoggerGlobal.Write($"Clan Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerClan.Process(message);
         }
         else
         {
-            Log("Received a null clan. Deserialization may of gone wrong");
+            LoggerGlobal.Write("Received a null clan. Deserialization may of gone wrong");
         }
     });
 }
 
 void ConsumeInstanceQueue()
 {
-    QueueInstance.Subscribe(async (instance) =>
+    QueueInstance.Subscribe(async (message) =>
     {
-        if (instance != null)
+        if (message != null)
         {
-            await ConsumerInstance.Process(instance);
+            LoggerGlobal.Write($"Instance Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerInstance.Process(message);
         }
         else
         {
-            Log("Received a null instance. Deserialization may of gone wrong");
+            LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
         }
     });
 }
@@ -72,13 +72,16 @@ rootCommand.SetHandler((queue) =>
     switch (q)
     {
         case "member":
+            LoggerGlobal.Write("Running consumer for member data");
             ConsumeMemberQueue();
             break;
         case "clan":
+            LoggerGlobal.Write("Running consumer for clan data");
             ConsumeClanQueue();
             break;
         case "instance":
         default:
+            LoggerGlobal.Write("Running consumer for instance data");
             ConsumeInstanceQueue();
             break;
     }
@@ -90,12 +93,15 @@ rootCommand.SetHandler((queue) =>
 await rootCommand.InvokeAsync(args);
 
 // handle CTRL+C 
+LoggerGlobal.Write("Setting up CTLR+C hook");
 var exitEvent = new ManualResetEvent(false);
 Console.CancelKeyPress += (sender, e) =>
 {
     e.Cancel = true;
     exitEvent.Set();
 };
+
+LoggerGlobal.Write("Setting up POSIX signal handlers");
 
 // handle SIGINT
 PosixSignalRegistration.Create(PosixSignal.SIGINT, context =>
@@ -112,11 +118,16 @@ PosixSignalRegistration.Create(PosixSignal.SIGTERM, context =>
 });
 
 
-
+LoggerGlobal.Write("Waitng to consume");
+    
 // until we receive the exit event , keep waiting
 exitEvent.WaitOne();
+
+LoggerGlobal.Write("Closing out and releasing");
 
 // close all connections
 // this will also close all consumers and channels automatically
 RasputinMessageQueue.Disconnect();
+LoggerGlobal.Write("Done");
 
+LoggerGlobal.Close();
