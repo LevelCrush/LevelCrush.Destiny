@@ -118,7 +118,7 @@ PosixSignalRegistration.Create(PosixSignal.SIGTERM, context =>
 });
 
 
-LoggerGlobal.Write("Waitng to consume");
+LoggerGlobal.Write("Waiting to consume");
     
 // until we receive the exit event , keep waiting
 exitEvent.WaitOne();
