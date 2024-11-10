@@ -15,7 +15,7 @@ void ConsumeMemberQueue()
     {
         if (message != null)
         {
-            LoggerGlobal.Write($"Member Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            LoggerGlobal.Write($"Member Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
             await ConsumerMember.Process(message);
         }
         else
@@ -31,7 +31,7 @@ void ConsumeClanQueue()
     {
         if (message != null)
         {
-            LoggerGlobal.Write($"Clan Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            LoggerGlobal.Write($"Clan Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
             await ConsumerClan.Process(message);
         }
         else
@@ -47,12 +47,28 @@ void ConsumeInstanceQueue()
     {
         if (message != null)
         {
-            LoggerGlobal.Write($"Instance Message received. Processing: ${JsonSerializer.Serialize(message.Entities)}");
+            LoggerGlobal.Write($"Instance Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
             await ConsumerInstance.Process(message);
         }
         else
         {
             LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
+        }
+    });
+}
+
+void ConsumeDBQueue()
+{
+    QueueDBSync.Subscribe(async (message) =>
+    {
+        if (message != null)
+        {
+            LoggerGlobal.Write($"DB sync message received. Type: {message.Task} | Processing: \r\n{JsonSerializer.Serialize(message.Data)}");
+            await ConsumerDBSync.Process(message);
+        }
+        else
+        {
+            LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
         }
     });
 }
@@ -78,6 +94,11 @@ rootCommand.SetHandler((queue) =>
         case "clan":
             LoggerGlobal.Write("Running consumer for clan data");
             ConsumeClanQueue();
+            break;
+        case "db":
+        case "database":
+            LoggerGlobal.Write("Running consumer for db sync data");
+            ConsumeDBQueue();
             break;
         case "instance":
         default:
