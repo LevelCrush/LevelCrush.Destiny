@@ -9,7 +9,10 @@ using Rasputin.MessageQueue.Queues;
 
 // setup any cli options that we  will need
 var targetQueueOption =
-    new Option<string>(name: "--queue", description: "The target queue that this consumer will run for");
+    new Option<string>(
+        name: "--queue", 
+        description: "The target queue that this consumer will run for",
+        getDefaultValue: () => "");
 
 
 var rootCommand = new RootCommand("Utilize Rasputin and consume in the background");
