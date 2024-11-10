@@ -12,7 +12,7 @@ using Rasputin.MessageQueue.Models;
 
 namespace Rasputin.MessageQueue.Consumer;
 
-public static class ConsumerDBSync
+public static class ConsumerDbSync
 {
     public static async Task<bool> Process(MessageDBSync message)
     {
@@ -72,7 +72,7 @@ public static class ConsumerDBSync
     private static async Task<bool> ProcessTriumphComponent(long membershipId,
         ConcurrentDictionary<string, DestinyRecordComponent> records)
     {
-        using (var db = await RasputinDatabase.Connect())
+        await using (var db = await RasputinDatabase.Connect())
         {
             LoggerGlobal.Write($"Saving {membershipId} triumph records. Total of {records.Count}");
 
@@ -110,7 +110,7 @@ public static class ConsumerDBSync
 
     private static async Task<bool> ProcessProfileComponent(DestinyProfileComponent profile)
     {
-        using (var db = await RasputinDatabase.Connect())
+        await using (var db = await RasputinDatabase.Connect())
         {
             var user = profile.UserInfo;
             var membershipId = user.MembershipId;
@@ -152,8 +152,7 @@ public static class ConsumerDBSync
 
     private static async Task<bool> ProcessCharacterComponent(DestinyCharacterComponent character)
     {
-
-        using (var db = await RasputinDatabase.Connect())
+        await using (var db = await RasputinDatabase.Connect())
         {
             LoggerGlobal.Write($"Syncing character: {character.CharacterId} tied to member {character.MembershipId}");
 

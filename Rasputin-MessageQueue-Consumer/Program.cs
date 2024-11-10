@@ -103,7 +103,7 @@ void ConsumeDbQueue()
         if (message != null)
         {
             LoggerGlobal.Write($"DB sync message received. Type: {message.Task}");
-            await ConsumerDBSync.Process(message);
+            await ConsumerDbSync.Process(message);
         }
         else
         {
