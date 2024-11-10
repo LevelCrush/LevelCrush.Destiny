@@ -23,11 +23,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj" />
       <ProjectReference Include="..\Rasputin-MessageQueue\Rasputin-MessageQueue.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="appsettings.test.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

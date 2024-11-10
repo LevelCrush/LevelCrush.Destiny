@@ -25,23 +25,27 @@ public partial class DBDestinyContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_config.Type == "MySql")
+        if (!optionsBuilder.IsConfigured)
         {
-            var builder = new MySqlConnectionStringBuilder();
-            builder.Server = _config.Host;
-            builder.Database = _config.Database;
-            builder.UserID = _config.Username;
-            builder.Password = _config.Password;
-            builder.Port = _config.Port;
-            var connectionString = builder.ToString();
-            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            if (_config.Type == "MySql")
+            {
+                var builder = new MySqlConnectionStringBuilder();
+                builder.Server = _config.Host;
+                builder.Database = _config.Database;
+                builder.UserID = _config.Username;
+                builder.Password = _config.Password;
+                builder.Port = _config.Port;
+                var connectionString = builder.ToString();
+                optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            }
+            else
+            {
+                var connectionStringBuilder = new SqliteConnectionStringBuilder(_config.Database + ".db");
+                connectionStringBuilder.DataSource = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                    connectionStringBuilder.DataSource);
+                optionsBuilder.UseSqlite(connectionStringBuilder.ToString());
+            }
         }
-        else
-        {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder(_config.Database + ".db");
-            connectionStringBuilder.DataSource = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, connectionStringBuilder.DataSource);
-            optionsBuilder.UseSqlite(connectionStringBuilder.ToString());
-        } 
     }
         
     public virtual DbSet<Clan> Clans { get; set; }

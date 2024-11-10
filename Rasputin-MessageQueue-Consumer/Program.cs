@@ -2,10 +2,15 @@
 using System.CommandLine;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Destiny;
 using Rasputin.MessageQueue;
 using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
 
+
+// load api configuration information
+var destinyApiConfig = DestinyConfig.Load();
+BungieClient.ApiKey = destinyApiConfig.ApiKey;
 
 // setup any cli options that we  will need
 var targetQueueOption =
@@ -97,7 +102,7 @@ void ConsumeDbQueue()
     {
         if (message != null)
         {
-            LoggerGlobal.Write($"DB sync message received. Type: {message.Task} | Processing: \r\n{JsonSerializer.Serialize(message.Data)}");
+            LoggerGlobal.Write($"DB sync message received. Type: {message.Task}");
             await ConsumerDBSync.Process(message);
         }
         else

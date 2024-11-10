@@ -18,6 +18,9 @@ public static class ConsumerMember
             case MessageMemberTask.Info:
                 await TaskInfo(message.Entities);
                 break;
+            default:
+                LoggerGlobal.Write($"Unknown member task {message.Task}");
+                break;
         }
         
         
