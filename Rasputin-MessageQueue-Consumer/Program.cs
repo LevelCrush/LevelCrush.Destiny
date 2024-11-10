@@ -2,76 +2,10 @@
 using System.CommandLine;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Rasputin.MessageQueue;
 using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
 
-
-
-void ConsumeMemberQueue()
-{
-    QueueMember.Subscribe(async (message) =>
-    {
-        if (message != null)
-        {
-            LoggerGlobal.Write($"Member Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerMember.Process(message);
-        }
-        else
-        {
-            LoggerGlobal.Write("Received a null member. Deserialization may of gone wrong");
-        }
-    });
-}
-
-void ConsumeClanQueue()
-{
-    QueueClan.Subscribe(async (message) =>
-    {
-        if (message != null)
-        {
-            LoggerGlobal.Write($"Clan Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerClan.Process(message);
-        }
-        else
-        {
-            LoggerGlobal.Write("Received a null clan. Deserialization may of gone wrong");
-        }
-    });
-}
-
-void ConsumeInstanceQueue()
-{
-    QueueInstance.Subscribe(async (message) =>
-    {
-        if (message != null)
-        {
-            LoggerGlobal.Write($"Instance Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerInstance.Process(message);
-        }
-        else
-        {
-            LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
-        }
-    });
-}
-
-void ConsumeDBQueue()
-{
-    QueueDBSync.Subscribe(async (message) =>
-    {
-        if (message != null)
-        {
-            LoggerGlobal.Write($"DB sync message received. Type: {message.Task} | Processing: \r\n{JsonSerializer.Serialize(message.Data)}");
-            await ConsumerDBSync.Process(message);
-        }
-        else
-        {
-            LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
-        }
-    });
-}
 
 // setup any cli options that we  will need
 var targetQueueOption =
@@ -98,7 +32,7 @@ rootCommand.SetHandler((queue) =>
         case "db":
         case "database":
             LoggerGlobal.Write("Running consumer for db sync data");
-            ConsumeDBQueue();
+            ConsumeDbQueue();
             break;
         case "instance":
         default:
@@ -152,3 +86,69 @@ RasputinMessageQueue.Disconnect();
 LoggerGlobal.Write("Done");
 
 LoggerGlobal.Close();
+return;
+
+void ConsumeDbQueue()
+{
+    QueueDBSync.Subscribe(async (message) =>
+    {
+        if (message != null)
+        {
+            LoggerGlobal.Write($"DB sync message received. Type: {message.Task} | Processing: \r\n{JsonSerializer.Serialize(message.Data)}");
+            await ConsumerDBSync.Process(message);
+        }
+        else
+        {
+            LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
+        }
+    });
+}
+
+void ConsumeInstanceQueue()
+{
+    QueueInstance.Subscribe(async (message) =>
+    {
+        if (message != null)
+        {
+            LoggerGlobal.Write($"Instance Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerInstance.Process(message);
+        }
+        else
+        {
+            LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
+        }
+    });
+}
+
+void ConsumeClanQueue()
+{
+    QueueClan.Subscribe(async (message) =>
+    {
+        if (message != null)
+        {
+            LoggerGlobal.Write($"Clan Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerClan.Process(message);
+        }
+        else
+        {
+            LoggerGlobal.Write("Received a null clan. Deserialization may of gone wrong");
+        }
+    });
+}
+
+void ConsumeMemberQueue()
+{
+    QueueMember.Subscribe(async (message) =>
+    {
+        if (message != null)
+        {
+            LoggerGlobal.Write($"Member Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+            await ConsumerMember.Process(message);
+        }
+        else
+        {
+            LoggerGlobal.Write("Received a null member. Deserialization may of gone wrong");
+        }
+    });
+}
+
