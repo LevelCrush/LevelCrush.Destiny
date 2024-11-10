@@ -58,13 +58,9 @@ public static class ConsumerDbSync
         if (profileResponse.ProfileRecords != null && profileResponse.ProfileRecords.Data != null)
         {
             tasks.Add(ProcessTriumphComponent(membershipId, profileResponse.ProfileRecords.Data.Records));
-        }
+        } 
         
-       await Task.WhenAll(tasks);
-        
-        // save any remaining changes if there are
-       // await db.SaveChangesAsync();
-        
+        await Task.WhenAll(tasks).ConfigureAwait(false);
         
         return true;
     }
