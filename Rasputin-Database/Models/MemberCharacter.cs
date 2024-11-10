@@ -43,10 +43,10 @@ public partial class MemberCharacter
     public long LastPlayedAt { get; set; }
 
     [Column("minutes_played_session")]
-    public int MinutesPlayedSession { get; set; }
+    public long MinutesPlayedSession { get; set; }
 
     [Column("minutes_played_lifetime")]
-    public int MinutesPlayedLifetime { get; set; }
+    public long MinutesPlayedLifetime { get; set; }
 
     [Column("emblem_hash")]
     public uint EmblemHash { get; set; }

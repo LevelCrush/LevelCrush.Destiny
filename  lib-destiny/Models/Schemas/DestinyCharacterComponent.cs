@@ -17,9 +17,12 @@ public class DestinyCharacterComponent
     [JsonPropertyName("dateLastPlayed")] 
     public DateTime LastPlayed { get; set; } = DateTime.UnixEpoch;
 
-    [JsonPropertyName("minutesPlayedTotal")]
-    public string MinutesPlayedSession { get; set; }
+    [JsonPropertyName("minutesPlayedThisSession")]
+    public long MinutesPlayedSession { get; set; }
 
+    [JsonPropertyName("minutesPlayedTotal")]
+    public long MinutesPlayedLifeTime { get; set; }
+    
     [JsonPropertyName("light")]
     public int Light { get; set; }
 

@@ -20,9 +20,13 @@ public class RasputinDatabaseConfig
 
     [DataMember] 
     public uint Port { get; set; } = 3306;
-    
-    [DataMember]
+
+    [DataMember] 
     public string Database { get; set; } = "defaultDb";
+
+    [DataMember]
+    public int PoolSize { get; set; } = 1;
+
     
     public static RasputinDatabaseConfig Load()
     {
