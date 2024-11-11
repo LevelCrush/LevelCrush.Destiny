@@ -39,7 +39,7 @@ public class DestinyActivity
         BungieMembershipType membershipType, long characterId, long timestampStart = 0)
     {
         
-        List<DestinyHistoricalStatsPeriodGroup> statActivities= new List<DestinyHistoricalStatsPeriodGroup>();
+        var statActivities = new List<DestinyHistoricalStatsPeriodGroup>();
 
         uint page = 0;
         DestinyActivityHistoryResults? activityPage = null;
