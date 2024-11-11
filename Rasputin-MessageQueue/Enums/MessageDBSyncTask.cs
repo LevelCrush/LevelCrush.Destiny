@@ -1,6 +1,6 @@
 ﻿namespace Rasputin.MessageQueue.Enums;
 
-public enum MessageDBSyncTask
+public enum MessageDbSyncTask
 {
     None = 0,
     MemberProfile = 1,

@@ -10,7 +10,7 @@ namespace Rasputin.MessageQueue.Queues;
 public static class QueueDBSync
 {
     
-    private static readonly QueueBaseDirectJson<MessageDBSync> _queue;
+    private static readonly QueueBaseDirectJson<MessageDbSync> _queue;
 
     private const string TARGET_EXCHANGE = "rasputin.direct";
     private const string TARGET_QUEUE = "rasputin.db_sync";
@@ -18,7 +18,7 @@ public static class QueueDBSync
 
     static QueueDBSync()
     {
-        _queue = new QueueBaseDirectJson<MessageDBSync>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
+        _queue = new QueueBaseDirectJson<MessageDbSync>(TARGET_EXCHANGE, TARGET_QUEUE, TARGET_ROUTING_KEY);
             
     }
     
@@ -33,18 +33,18 @@ public static class QueueDBSync
         _queue.Disconnect();
     }
     
-    public static void Publish(MessageDBSync message)
+    public static void Publish(MessageDbSync message)
     {
         _queue.Publish(message);
     }
 
 
-    public static string Subscribe(Func<MessageDBSync?, Task> processCallback)
+    public static string Subscribe(Func<MessageDbSync?, Task> processCallback)
     {
         return _queue.Subscribe(processCallback);
     }
 
-    public static MessageDBSync? Pull()
+    public static MessageDbSync? Pull()
     {
         return _queue.Pull();
     }

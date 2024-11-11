@@ -46,7 +46,7 @@ public partial class MemberActivity
     public long InstanceId { get; set; }
 
     [Column("mode")]
-    public int Mode { get; set; }
+    public long Mode { get; set; }
 
     [Required]
     [Column("modes")]

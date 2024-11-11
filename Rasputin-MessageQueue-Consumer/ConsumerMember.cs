@@ -97,21 +97,30 @@ public static class ConsumerMember
         var payload = JsonSerializer.Serialize(activityHistory);
         
         LoggerGlobal.Write($"Done crawling character {characterId} activities. Publishing activity and stats");
+
+        var headers = new Dictionary<string, string>()
+        {
+            { "membership", membershipId.ToString() },
+            { "platform", ((int)membershipType).ToString() },
+            { "character", characterId.ToString() }
+        };
             
         // message dedicated to activity history
-        QueueDBSync.Publish(new MessageDBSync()
+        QueueDBSync.Publish(new MessageDbSync()
         {
-            Task = MessageDBSyncTask.ActivityHistory,
-            Data = payload
+            Task = MessageDbSyncTask.ActivityHistory,
+            Data = payload,
+            Headers = headers
         });
         
         LoggerGlobal.Write($"Done publishing activity for {characterId}");
 
         // message dedicated to activity stats
-        QueueDBSync.Publish(new MessageDBSync()
+        QueueDBSync.Publish(new MessageDbSync()
         {
-            Task = MessageDBSyncTask.ActivityStats,
-            Data = payload
+            Task = MessageDbSyncTask.ActivityStats,
+            Data = payload,
+            Headers = headers
         });
         
         LoggerGlobal.Write($"Done publishing stats for {characterId}");
@@ -157,9 +166,9 @@ public static class ConsumerMember
             if (profile != null && profile.Profile != null && profile.Profile.Data != null)
             {
                 LoggerGlobal.Write($"{profile.Profile.Data.UserInfo.GlobalDisplayName}#{profile.Profile.Data.UserInfo.GlobalDisplayNameCode} profile has been found. Queing for sync");
-                QueueDBSync.Publish(new MessageDBSync()
+                QueueDBSync.Publish(new MessageDbSync()
                 {
-                    Task = MessageDBSyncTask.MemberProfile,
+                    Task = MessageDbSyncTask.MemberProfile,
                     Data = JsonSerializer.Serialize(profile) // yes, this is redundant.
                 });
             }
