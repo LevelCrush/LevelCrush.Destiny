@@ -50,7 +50,7 @@ public class Tests
         
         // publish
         MessageClan clan = new MessageClan();
-        clan.Task = MessageClanTask.Info;
+        clan.Task = MessageClanTask.Crawl;
         clan.Entities = new[]
         {
             "4356849", // levelcrush

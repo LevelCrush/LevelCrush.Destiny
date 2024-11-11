@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Destiny;
+using Rasputin_Redis;
 using Rasputin.MessageQueue;
 using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
@@ -11,6 +12,8 @@ using Rasputin.MessageQueue.Queues;
 // load api configuration information
 var destinyApiConfig = DestinyConfig.Load();
 BungieClient.ApiKey = destinyApiConfig.ApiKey;
+
+var redis = RasputinRedis.Connect();
 
 // setup any cli options that we  will need
 var targetQueueOption =
@@ -91,6 +94,8 @@ LoggerGlobal.Write("Closing out and releasing");
 // close all connections
 // this will also close all consumers and channels automatically
 RasputinMessageQueue.Disconnect();
+await RasputinRedis.Close();
+
 LoggerGlobal.Write("Done");
 
 LoggerGlobal.Close();

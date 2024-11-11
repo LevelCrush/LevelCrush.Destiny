@@ -14,10 +14,10 @@ namespace Rasputin.MessageQueue.Consumer;
 
 public static class ConsumerDbSync
 {
-    private const int ChunkSizeActivities = 1000;
-    private const int ChunkSizeStats = 1000;
-    private const int ChunkSizeInstances = 100;
-    private const int ChunkSizeInstanceMembers = 1000;
+    public const int ChunkSizeActivities = 1000;
+    public const int ChunkSizeStats = 1000;
+    public const int ChunkSizeInstances = 100;
+    public const int ChunkSizeInstanceMembers = 1000;
     
     public static async Task<bool> Process(MessageDbSync message)
     {

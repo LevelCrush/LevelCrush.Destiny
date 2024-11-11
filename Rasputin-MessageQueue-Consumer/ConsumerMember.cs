@@ -38,7 +38,7 @@ public static class ConsumerMember
         return false;
     }
 
-    private static async Task<bool> TaskActivities(string[] entities, bool fresh = false)
+    public static async Task<ConcurrentDictionary<string, HashSet<long>>> TaskActivities(string[] entities, bool fresh = false)
     {
         /*
          * When processing an activity message , the entities themselves are membership ids
@@ -48,8 +48,10 @@ public static class ConsumerMember
          */
         var profiles = await TaskInfo(entities);
         
+        var profilesInstanceIds = new ConcurrentDictionary<string, HashSet<long>>();
         foreach (var entity in entities)
         {
+            var instanceIds = new HashSet<long>();
             var found = profiles.TryGetValue(entity, out var profile);
             if (found && profile != null 
                       && profile.Profile != null 
@@ -58,22 +60,27 @@ public static class ConsumerMember
                       && profile.Characters.Data != null)
             {
                 LoggerGlobal.Write($"Found profile for {entity}. Beginning to crawl characters");
-                await Parallel.ForEachAsync(profile.Characters.Data.Values, 
-                    async (character, token) => 
-                        await TaskActivitiesCharacter(character.MembershipId, character.MembershipType, character.CharacterId, fresh)
-                        );
+                
+                foreach (var character in profile.Characters.Data.Values)
+                {
+                    var characterInstanceIds = await TaskActivitiesCharacter(character.MembershipId,
+                        character.MembershipType, character.CharacterId, fresh);
+                    
+                    instanceIds.UnionWith(characterInstanceIds);
+                }
 
             }
             else
             {
                 LoggerGlobal.Write($"Profile could not be found for {entity}");
             }
+            profilesInstanceIds.TryAdd(entity, instanceIds);
         }
 
-        return true;
+        return profilesInstanceIds;
     }
 
-    private static async Task<long> TaskActivitiesCharacter(long membershipId, BungieMembershipType membershipType,
+    public static async Task<HashSet<long>> TaskActivitiesCharacter(long membershipId, BungieMembershipType membershipType,
         long characterId, bool fresh = false)
     {
         long startTimestamp = 0;
@@ -124,12 +131,18 @@ public static class ConsumerMember
         });
         
         LoggerGlobal.Write($"Done publishing stats for {characterId}");
-        
-        return activityHistory.LongLength;
+
+        var instanceIds = new HashSet<long>();
+        foreach (var activity in activityHistory)
+        {
+            instanceIds.Add(activity.Details.InstanceId);
+        }
+
+        return instanceIds;
     }
     
 
-    private static async Task<ConcurrentDictionary<string, DestinyProfileResponse?>> TaskInfo(string[] entities)
+    public static async Task<ConcurrentDictionary<string, DestinyProfileResponse?>> TaskInfo(string[] entities)
     {
         ConcurrentDictionary<string, DestinyProfileResponse?> profiles = new ConcurrentDictionary<string, DestinyProfileResponse?>();
         foreach (var entity in entities)

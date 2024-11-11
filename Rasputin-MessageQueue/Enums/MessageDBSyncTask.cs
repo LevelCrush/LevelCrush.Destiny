@@ -6,5 +6,7 @@ public enum MessageDbSyncTask
     MemberProfile = 1,
     ActivityHistory = 2,
     ActivityStats = 3,
-    Instance = 4
+    Instance = 4,
+    ClanInfo = 5,
+    ClanRoster = 6
 }
