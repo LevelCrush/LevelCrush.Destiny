@@ -5,7 +5,7 @@ namespace Destiny.Api;
 
 public class DestinyInstance
 {
-    public static async Task<DestinyPostGameCarnageReportData> CarnageReport(long instanceId)
+    public static async Task<DestinyPostGameCarnageReportData?> CarnageReport(long instanceId)
     {
         // interally RestSharp/Built in C# Http handler is not following redirecto http location. the endpoint is no longer hosted on the normal bungie endpoint and has been moved to a different domain (stats.bungie.net)
         // https://stats.bungie.net/Platform
