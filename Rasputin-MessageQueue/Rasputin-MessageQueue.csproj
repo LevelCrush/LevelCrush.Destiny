@@ -29,4 +29,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Rasputin-Redis\Rasputin-Redis.csproj" />
+    </ItemGroup>
+
 </Project>
