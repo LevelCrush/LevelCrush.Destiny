@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
+using Destiny.Models.Enums;
 using Destiny.Models.Responses;
 using Destiny.Models.Schemas;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,8 @@ public static class ConsumerDbSync
 {
     private const int ChunkSizeActivities = 1000;
     private const int ChunkSizeStats = 1000;
-    private const int ChunkSizeInstances = 1;
+    private const int ChunkSizeInstances = 100;
+    private const int ChunkSizeInstanceMembers = 1000;
     
     public static async Task<bool> Process(MessageDbSync message)
     {
@@ -33,6 +35,9 @@ public static class ConsumerDbSync
             case MessageDbSyncTask.ActivityStats:
                 instanceIds = await ProcessActivityStats(message.Data, message.Headers);
                 result = instanceIds.Length > 0;
+                break;
+            case MessageDbSyncTask.Instance:
+                result = await ProcessInstance(message.Data);
                 break;
             default:
                 LoggerGlobal.Write($"Unsupported db task type: {message.Task}");
@@ -66,6 +71,151 @@ public static class ConsumerDbSync
 
 
         return result;
+    }
+
+    private static async Task<bool> ProcessInstance(string messageData)
+    {
+        var instanceMemberRecords = new List<InstanceMember>();
+
+        var carnageReport = JsonSerializer.Deserialize<DestinyPostGameCarnageReportData>(messageData);
+        if (carnageReport == null)
+        {
+            LoggerGlobal.Write($"Failed to deserialize carnage report: {messageData}");
+            return false;
+        }
+        
+        var instanceId = carnageReport.ActivityDetails.InstanceId;
+        var activityCompleted = false;
+        var completionReasons = new ConcurrentDictionary<string, bool>();
+        var instanceMemberMap = new ConcurrentDictionary<(long,BungieMembershipType), List<long>>();
+        foreach (var data in carnageReport.Entries)
+        {
+            var playerMembershipId = data.Player.User.MembershipId;
+            var characterId = data.CharacterId;
+            var membershipType = data.Player.User.MembershipType;
+
+            data.Values.TryGetValue("completed", out var completedStatValue);
+            var playerCompleted = false;
+            if (completedStatValue != null)
+            {
+                playerCompleted = completedStatValue.Basic.DisplayValue == "Yes";
+            }
+            
+            data.Values.TryGetValue("completionReason", out var completionReasonValue);
+            var completionReason = "";
+            if (completedStatValue != null)
+            {
+                completionReason = completedStatValue.Basic.DisplayValue;
+            }
+            
+            
+            // insert instanceMember Record 
+            instanceMemberRecords.Add(new InstanceMember()
+            {
+                InstanceId = instanceId,
+                MembershipId = playerMembershipId,
+                CharacterId = characterId,
+                Platform = (int)membershipType,
+                ClassName = data.Player.CharacterClass,
+                ClassHash = data.Player.ClassHash, 
+                LightLevel = data.Player.LightLevel,
+                ClanName = data.Player.ClanName,
+                ClanTag = data.Player.ClanTag,
+                Completed = playerCompleted,
+                CompletionReason = completionReason,
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+            
+
+            // so long as one player has completed, the entire instance can be marked as completed
+            if (playerCompleted)
+            {
+                activityCompleted = true;
+            }
+            
+            // we only need to add to the dictionary the first time
+            // track to se if we have completed. Note, we only care about the first "completion" reason for whatever comes first
+            // for the purpose of this sync we don't need to know **every** player reason
+            // that is already handled by character activity history sync
+            completionReasons.TryAdd(completionReason, playerCompleted);
+            
+            instanceMemberMap.AddOrUpdate(
+                (playerMembershipId, membershipType), // tuple as key
+                [characterId], // initialize list
+                (key, oldValue) =>
+            {
+                // just append onto our current list here
+                oldValue.Add(characterId);
+                return oldValue;
+            });
+        }
+
+        var reasons = string.Join(",", completionReasons.Keys.ToArray());
+
+        var instanceRecord = new Instance()
+        {
+            InstanceId = instanceId,
+            OccurredAt = ((DateTimeOffset)carnageReport.Period).ToUnixTimeSeconds(),
+            StartingPhaseIndex = carnageReport.StartingPhaseIndex ?? 0,
+            StartedFromBeginning = carnageReport.ActivityWasStartedFromBeginning ?? true,
+            ActivityHash = carnageReport.ActivityDetails.ReferenceId,
+            ActivityDirectorHash = carnageReport.ActivityDetails.DirectorActivityHash,
+            IsPrivate = carnageReport.ActivityDetails.IsPrivate,
+            Completed = activityCompleted,
+            CompletionReasons = reasons,
+            CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            UpdatedAt = 0,
+            DeletedAt = 0
+        };
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            LoggerGlobal.Write($"Writing {instanceRecord} to database");
+            await db.Instances.Upsert(instanceRecord)
+                .On(p => new { p.InstanceId })
+                .WhenMatched((@old, @new) => new Instance()
+                {
+                    OccurredAt = @new.OccurredAt,
+                    StartedFromBeginning = @new.StartedFromBeginning,
+                    StartingPhaseIndex = @new.StartingPhaseIndex,
+                    ActivityHash = @new.ActivityHash,
+                    ActivityDirectorHash = @new.ActivityDirectorHash,
+                    IsPrivate = @new.IsPrivate,
+                    Completed = @new.Completed,
+                    CompletionReasons = @new.CompletionReasons,
+                    UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    DeletedAt = 0
+                })
+                .RunAsync();
+            
+            
+            LoggerGlobal.Write($"Done writing {instanceRecord} to database");
+            LoggerGlobal.Write($"Now writing {instanceMemberRecords.Count} to database tied to {instanceRecord}");
+            
+            foreach(var chunk in instanceMemberRecords.Chunk(ChunkSizeInstanceMembers)) {
+                await db.InstanceMembers.UpsertRange(instanceMemberRecords)
+                    .On(p => new { p.MembershipId, p.CharacterId, p.InstanceId })
+                    .WhenMatched((@old, @new) => new InstanceMember()
+                    {
+                        ClassHash = @new.ClassHash,
+                        ClassName = @new.ClassName,
+                        EmblemHash = @new.EmblemHash,
+                        LightLevel = @new.LightLevel,
+                        ClanName = @new.ClanName,
+                        ClanTag = @new.ClanTag,
+                        Completed = @new.Completed,
+                        CompletionReason = @new.CompletionReason,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+
+            }
+        }
+        
+        return true;
     }
 
     private static async Task<long[]> ProcessActivityStats(string data, Dictionary<string,string> headers)

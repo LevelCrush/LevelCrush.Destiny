@@ -11,6 +11,9 @@ public class DestinyPostGameCarnageReportEntry
     [JsonPropertyName("characterId")] 
     public long CharacterId { get; set; } = 0;
     
+    [JsonPropertyName("player")]
+    public DestinyHistoricalPlayer Player { get; set; }
+    
     [JsonPropertyName("score")]
     public DestinyHistoricalStatsValue Score { get; set; }
     
