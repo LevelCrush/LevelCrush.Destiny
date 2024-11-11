@@ -4,6 +4,7 @@ using Destiny.Models.Enums;
 using Destiny.Models.Responses;
 using Destiny.Models.Schemas;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Operation.Buffer;
 using Rasputin.Database;
 using Rasputin.Database.Models;
 using Rasputin.MessageQueue.Enums;
@@ -18,6 +19,35 @@ public static class ConsumerDbSync
     public const int ChunkSizeStats = 1000;
     public const int ChunkSizeInstances = 100;
     public const int ChunkSizeInstanceMembers = 1000;
+
+    private static Dictionary<char, char> charMap = new Dictionary<char, char>()
+    {
+        { ' ', '-' },
+        { '%', '-' },
+        { '#', '-' },
+        { '(', '-' },
+        { ')', '-' },
+        { '[', '-' },
+        { ']', '-' },
+        { '\'', '-' },
+        { '"', '-' },
+    };
+
+    private static string Slugify(string phrase)
+    {
+        var slug = phrase.Trim().ToLower();
+        var slugChars = slug.ToCharArray();
+        for(var i = 0; i < slugChars.Length; i++)
+        {
+            var didFind = charMap.TryGetValue(slugChars[i], out var replacementC);
+            if (didFind)
+            {
+                slugChars[i] = replacementC;
+            }
+        }
+
+        return slugChars.ToString() ?? "";
+    }
     
     public static async Task<bool> Process(MessageDbSync message)
     {
@@ -38,6 +68,12 @@ public static class ConsumerDbSync
                 break;
             case MessageDbSyncTask.Instance:
                 result = await ProcessInstance(message.Data);
+                break;
+            case MessageDbSyncTask.ClanInfo:
+                result = await ProcessClanInfo(message.Data);
+                break;
+            case MessageDbSyncTask.ClanRoster:
+                result = await ProcessClanRoster(message.Data);
                 break;
             default:
                 LoggerGlobal.Write($"Unsupported db task type: {message.Task}");
@@ -71,6 +107,143 @@ public static class ConsumerDbSync
 
 
         return result;
+    }
+
+    private static async Task<bool> ProcessClanRoster(string data)
+    {
+        var clanRoster = JsonSerializer.Deserialize<DestinySearchResultOfGroupMember>(data);
+        if (clanRoster == null)
+        {
+            LoggerGlobal.Write($"Clan roster data could not be deserialized  {data}");
+            return false;
+        }
+
+        if (clanRoster.Results.Length == 0)
+        {
+            LoggerGlobal.Write($"There is no roster data for this clan {data}");
+            return false;
+        }
+
+        // there will **always** be at least one result in a valid clan response
+        var clanId = clanRoster.Results[0].GroupId;
+        ClanMember[]? dbExistingClanMembers = null;
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            dbExistingClanMembers = await db.ClanMembers.Where((x) => x.GroupId == clanId)
+                .ToArrayAsync();
+        }
+        
+        var existingClanMemberMap = new ConcurrentDictionary<long, ClanMember>();
+        var foundMap = new ConcurrentDictionary<long, long>();
+        foreach (var clanMember in dbExistingClanMembers)
+        {
+            existingClanMemberMap.TryAdd(clanMember.MembershipId, clanMember);
+            foundMap.TryAdd(clanMember.MembershipId, clanMember.Id);
+        }
+
+
+        var records = new List<ClanMember>();
+ 
+        var deleteIds = new List<long>();
+        
+        // construct record list of current roster
+        foreach (var member in clanRoster.Results)
+        {
+            records.Add(new ClanMember()
+            {
+                GroupId = member.GroupId,
+                GroupRole = (int)member.MemberType,
+                Platform = (int)member.UserInfo.MembershipType,
+                MembershipId = member.UserInfo.MembershipId,
+                JoinedAt = ((DateTimeOffset)member.JoinDate).ToUnixTimeSeconds(),
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0,
+            });
+
+            // anything that we are iterating on from the search results will have record id = 0
+            // even if they are in our system
+            // an UPSERT will automatically find and update them based on keys
+            // anything that is remaining with a **non zero** record id is going to be removed
+            foundMap.AddOrUpdate(member.UserInfo.MembershipId, 0, (k, v) => 0);
+        }
+        
+        
+        // construct list of membership ids to remove from the clan roster table tied to this clan
+        foreach (var (membershipId, dbRecordId) in foundMap)
+        {
+            if (dbRecordId != 0)
+            {
+                deleteIds.Add(dbRecordId);    
+            }
+        }
+        
+        
+        LoggerGlobal.Write($"Upserting {records.Count} records to clan roster for {clanId}");
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            await db.ClanMembers.UpsertRange(records)
+                .On(p => new {p.MembershipId, p.GroupId})
+                .WhenMatched((@old, @new) => new ClanMember()
+                {
+                    GroupRole = @new.GroupRole,
+                    JoinedAt = @new.JoinedAt,
+                    UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    DeletedAt =  0
+                })
+                .RunAsync();
+        }
+        
+        LoggerGlobal.Write($"Removing {deleteIds.Count} members from {clanId}");
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            await db.ClanMembers.Where(p => deleteIds.Contains(p.Id))
+                .ExecuteDeleteAsync();
+        }
+        LoggerGlobal.Write($"Done with clan roster for {clanId}");
+        
+        return true;
+    }
+
+    private static async Task<bool> ProcessClanInfo(string data)
+    {
+        var clanInfo = JsonSerializer.Deserialize<DestinyGroupResponse>(data);
+        if (clanInfo == null)
+        {
+            LoggerGlobal.Write($"Failed to parse clan info data: {data}");
+            return false;
+        }
+
+        var clanRecord = new Clan()
+        {
+            GroupId = clanInfo.Detail.GroupId,
+            Name = clanInfo.Detail.Name,
+            Slug = Slugify(clanInfo.Detail.Name),
+            Motto = clanInfo.Detail.Motto,
+            About = clanInfo.Detail.About,
+            CallSign = clanInfo.Detail.ClanInfo.ClanCallsign,
+            CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            UpdatedAt = 0,
+            DeletedAt = 0
+        };
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            LoggerGlobal.Write($"Upserting clan {clanRecord.Name}");
+            await db.Clans.Upsert(clanRecord)
+                .On(x => new { x.GroupId })
+                .WhenMatched((@old, @new) => new Clan()
+                {
+                    Name = @new.Name,
+                    Slug = @new.Slug,
+                    Motto = @new.Motto,
+                    About = @new.About,
+                    CallSign = @new.CallSign
+                })
+                .RunAsync();
+        }
+
+        return true;
     }
 
     private static async Task<bool> ProcessInstance(string messageData)

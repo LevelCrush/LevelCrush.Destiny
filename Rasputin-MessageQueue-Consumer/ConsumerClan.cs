@@ -25,6 +25,9 @@ public static class ConsumerClan
             case MessageClanTask.Roster:
                 await ProcessClanRoster(clan.Entities);
                 break;
+            case MessageClanTask.Crawl:
+                await ProcessClanCrawl(clan.Entities);
+                break;
             default:
                 LoggerGlobal.Write($"Clan task {clan.Task} is not implemented.");
                 break;
