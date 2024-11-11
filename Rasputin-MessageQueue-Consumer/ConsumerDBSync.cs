@@ -7,6 +7,7 @@ using Rasputin.Database;
 using Rasputin.Database.Models;
 using Rasputin.MessageQueue.Enums;
 using Rasputin.MessageQueue.Models;
+using Rasputin.MessageQueue.Queues;
 
 namespace Rasputin.MessageQueue.Consumer;
 
@@ -14,11 +15,12 @@ public static class ConsumerDbSync
 {
     private const int ChunkSizeActivities = 1000;
     private const int ChunkSizeStats = 1000;
+    private const int ChunkSizeInstances = 1;
     
     public static async Task<bool> Process(MessageDbSync message)
     {
         var result = false;
-        long[] instanceIds;
+        long[]? instanceIds = null;
         switch (message.Task)
         {
             case MessageDbSyncTask.MemberProfile:
@@ -36,8 +38,33 @@ public static class ConsumerDbSync
                 LoggerGlobal.Write($"Unsupported db task type: {message.Task}");
                 break;
         }
-    
         
+        // if we have gathered any instance ids push them into our instance queue
+        // for now, we will push **each** instance into the queue instead of taking advantage of the batching
+        // in theory, more consumers = better paralleism that is reliable when querying the bungie api 
+        // provided each consumer is on a different machine with a different ip
+        // best case we can increase this number to chunk 100 or so at a time
+        if (instanceIds != null)
+        {
+            LoggerGlobal.Write($"Sending {instanceIds.Length} instance ids to message queue");
+            foreach (var chunk in instanceIds.Chunk(ChunkSizeInstances))
+            {
+                string[] instanceStringIds = new string[chunk.Length];
+                var i = 0;
+                foreach (var instanceId in chunk)
+                {
+                    instanceStringIds[i++] = instanceId.ToString();
+                }
+                
+                QueueInstance.Publish(new MessageInstance()
+                {
+                    Entities = instanceStringIds
+                });
+            }
+            LoggerGlobal.Write($"Done sending {instanceIds.Length} instance ids to message queue");
+        }
+
+
         return result;
     }
 
@@ -186,7 +213,7 @@ public static class ConsumerDbSync
 
             }
         }
-
+        
         return instanceIds;
     }
 
