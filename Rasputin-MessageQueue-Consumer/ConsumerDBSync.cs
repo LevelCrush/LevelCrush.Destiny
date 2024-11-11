@@ -12,24 +12,25 @@ namespace Rasputin.MessageQueue.Consumer;
 
 public static class ConsumerDbSync
 {
-
-    public const int CHUNK_SIZE_ACTIVITIES = 1024;
+    private const int ChunkSizeActivities = 1000;
+    private const int ChunkSizeStats = 1000;
     
     public static async Task<bool> Process(MessageDbSync message)
     {
         var result = false;
-       
+        long[] instanceIds;
         switch (message.Task)
         {
             case MessageDbSyncTask.MemberProfile:
                 result = await ProcessProfile(message.Data);
                 break;
             case MessageDbSyncTask.ActivityHistory:
-                var instanceIds = await ProcessActivityHistory(message.Data, message.Headers);
+                instanceIds = await ProcessActivityHistory(message.Data, message.Headers);
                 result = instanceIds.Length > 0;
                 break;
             case MessageDbSyncTask.ActivityStats:
-                result = await ProcessActivityStats(message.Data, message.Headers);
+                instanceIds = await ProcessActivityStats(message.Data, message.Headers);
+                result = instanceIds.Length > 0;
                 break;
             default:
                 LoggerGlobal.Write($"Unsupported db task type: {message.Task}");
@@ -40,16 +41,73 @@ public static class ConsumerDbSync
         return result;
     }
 
-    private static async Task<bool> ProcessActivityStats(string data, Dictionary<string,string> headers)
+    private static async Task<long[]> ProcessActivityStats(string data, Dictionary<string,string> headers)
     {
         var history = JsonSerializer.Deserialize<DestinyHistoricalStatsPeriodGroup[]>(data);
         if (history == null)
         {
             LoggerGlobal.Write($"Failed to deserialize incoming activity stat history data: {data}");
-            return false;
+            return [];
         }
         
-        return true;
+        headers.TryGetValue("membership", out var membershipIdRaw);
+        headers.TryGetValue("platform", out var platformIdRaw);
+        headers.TryGetValue("character", out var characterIdRaw);
+
+
+        long.TryParse(membershipIdRaw, out var membershipId);
+        int.TryParse(platformIdRaw, out var membershipType);
+        long.TryParse(characterIdRaw, out var characterId);
+            
+        var tempHash = new HashSet<long>();
+        var records = new List<MemberActivityStat>();
+        
+        LoggerGlobal.Write($"Processing activity history stats for membership: {membershipId} and character {characterId}");
+        foreach (var historyEntry in history)
+        {
+            tempHash.Add(historyEntry.Details.InstanceId);
+
+            foreach (var (id, stat) in historyEntry.Values)
+            {
+                records.Add(new MemberActivityStat()
+                {
+                    MembershipId = membershipId,
+                    CharacterId = characterId,
+                    InstanceId = historyEntry.Details.InstanceId,
+                    Name = stat.StatId,
+                    Value = stat.Basic.Value,
+                    ValueDisplay = stat.Basic.DisplayValue,
+                    CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                    UpdatedAt = 0,
+                    DeletedAt = 0
+                });
+            }
+        }
+        var instanceIds = tempHash.ToArray();
+        
+        LoggerGlobal.Write($"Preparing to write {records.Count} stat records for membership: {membershipId} and character {characterId}");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            var chunkCount = 0;
+            foreach (var chunk in records.Chunk(ChunkSizeStats))
+            {
+                LoggerGlobal.Write($"Writing stat chunk {++chunkCount} for {membershipId} and character {characterId}");
+                await db.MemberActivityStats.UpsertRange(chunk)
+                    .On(p => new { p.MembershipId, p.CharacterId, p.InstanceId, p.Name})
+                    .WhenMatched((@old, @new) => new MemberActivityStat()
+                    {
+                        Value = @new.Value, 
+                        ValueDisplay = @new.ValueDisplay, 
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+                LoggerGlobal.Write($"Done Writing stat chunk {chunkCount} for {membershipId} and character {characterId}");
+            }
+        }
+
+        return instanceIds;
     }
 
     private static async Task<long[]> ProcessActivityHistory(string data, Dictionary<string,string> headers)
@@ -106,10 +164,10 @@ public static class ConsumerDbSync
         await using (var db = await RasputinDatabase.Connect())
         {
             var chunkCount = 0;
-            foreach (var chunk in historyRecords.Chunk(CHUNK_SIZE_ACTIVITIES))
+            foreach (var chunk in historyRecords.Chunk(ChunkSizeActivities))
             {
                 
-                LoggerGlobal.Write($"Writing chunk {++chunkCount} for {membershipId} and character {characterId}");
+                LoggerGlobal.Write($"Writing history chunk {++chunkCount} for {membershipId} and character {characterId}");
                 await db.MemberActivities.UpsertRange(chunk)
                     .On(p => new { p.MembershipId, p.CharacterId, p.InstanceId, })
                     .WhenMatched((old, @new) => new MemberActivity()
@@ -124,7 +182,7 @@ public static class ConsumerDbSync
                         DeletedAt = 0
                     })
                     .RunAsync();
-                LoggerGlobal.Write($"Done Writing chunk {chunkCount} for {membershipId} and character {characterId}");
+                LoggerGlobal.Write($"Done Writing history chunk {chunkCount} for {membershipId} and character {characterId}");
 
             }
         }
