@@ -190,19 +190,23 @@ public class ApiRequest<TRequestBody> where TRequestBody : class
         {
             var res = await SendOnce<TResponse>();
 
-            if (res == null)
+            if (res != null)
             {
-                throw new Exception($"Failed to capture/deserialize response to '{_endPoint}'");
-            }
-
-            if (res.IsThrottled() && _retries < _retriesMax)
-            {
-                _retries++;
-                await Task.Delay(TimeSpan.FromSeconds(res.ThrottleSeconds + 2));
+                if (res.IsThrottled() && _retries < _retriesMax)
+                {
+                    _retries++;
+                    await Task.Delay(TimeSpan.FromSeconds(res.ThrottleSeconds + 2));
+                }
+                else
+                {
+                    return res;
+                }
             }
             else
             {
-                return res;
+                _retries++;
+                // wait 10 seconds and try again
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
         } while (_retries < _retriesMax);
 
