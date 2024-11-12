@@ -6,6 +6,7 @@ using Destiny.Models.Responses;
 using Destiny.Models.Schemas;
 using Microsoft.EntityFrameworkCore;
 using Rasputin.Database;
+using Rasputin.Database.Models;
 using Rasputin.MessageQueue.Enums;
 using Rasputin.MessageQueue.Models;
 using Rasputin.MessageQueue.Queues;
@@ -63,10 +64,13 @@ public static class ConsumerMember
                 
                 foreach (var character in profile.Characters.Data.Values)
                 {
+                    LoggerGlobal.Write($"Crawling character for {entity}: {character.CharacterId}");
                     var characterInstanceIds = await TaskActivitiesCharacter(character.MembershipId,
                         character.MembershipType, character.CharacterId, fresh);
+                    LoggerGlobal.Write($"Done Crawling character for {entity}: {character.CharacterId}");
                     
                     instanceIds.UnionWith(characterInstanceIds);
+                    LoggerGlobal.Write($"Done combining instance ids for {entity}: {character.CharacterId}");
                 }
 
             }
@@ -88,49 +92,59 @@ public static class ConsumerMember
         {
             // if fresh, we always start at 0 
             // if not fresh, query the database to see if we can pull the most recent activity (if any)
-            startTimestamp = fresh switch
+            if (fresh)
             {
-                true => 0,
-                false => await db.MemberActivities
+                startTimestamp = 0;
+            }
+            else
+            {
+                var recentActivity = await db.MemberActivities
                     .Where(x => x.CharacterId == characterId)
-                    .Select(p => p.OccurredAt)
-                    .DefaultIfEmpty(0)
-                    .MaxAsync()
-            };
+                    .OrderByDescending(x => x.OccurredAt)
+                    .Take(1)
+                    .FirstOrDefaultAsync();
+                
+                startTimestamp = recentActivity != null ? recentActivity.OccurredAt : 0;
+            }
         }
 
         LoggerGlobal.Write($"Starting to crawl character {characterId} activities using timestamp {startTimestamp} as base");
         var activityHistory = await DestinyActivity.ForCharacter(membershipId, membershipType, characterId, startTimestamp);
-        var payload = JsonSerializer.Serialize(activityHistory);
-        
-        LoggerGlobal.Write($"Done crawling character {characterId} activities. Publishing activity and stats");
-
-        var headers = new Dictionary<string, string>()
+        var chunkCounter = 0;
+        foreach(var chunk in activityHistory.Chunk(ConsumerDbSync.ChunkSizeCharacterHistoryActivity))
         {
-            { "membership", membershipId.ToString() },
-            { "platform", ((int)membershipType).ToString() },
-            { "character", characterId.ToString() }
-        };
+            var payload = JsonSerializer.Serialize(chunk);
+        
+            LoggerGlobal.Write($"Chunk: {++chunkCounter} Done crawling character {characterId} activities. Publishing activity and stats");
+
+            var headers = new Dictionary<string, string>()
+            {
+                { "membership", membershipId.ToString() },
+                { "platform", ((int)membershipType).ToString() },
+                { "character", characterId.ToString() }
+            };
             
-        // message dedicated to activity history
-        QueueDBSync.Publish(new MessageDbSync()
-        {
-            Task = MessageDbSyncTask.ActivityHistory,
-            Data = payload,
-            Headers = headers
-        });
+            // message dedicated to activity history
+            QueueDBSync.Publish(new MessageDbSync()
+            {
+                Task = MessageDbSyncTask.ActivityHistory,
+                Data = payload,
+                Headers = headers
+            });
         
-        LoggerGlobal.Write($"Done publishing activity for {characterId}");
+            LoggerGlobal.Write($"Chunk: {chunkCounter} Done publishing activity for {characterId}");
 
-        // message dedicated to activity stats
-        QueueDBSync.Publish(new MessageDbSync()
-        {
-            Task = MessageDbSyncTask.ActivityStats,
-            Data = payload,
-            Headers = headers
-        });
+            // message dedicated to activity stats
+            QueueDBSync.Publish(new MessageDbSync()
+            {
+                Task = MessageDbSyncTask.ActivityStats,
+                Data = payload,
+                Headers = headers
+            });
         
-        LoggerGlobal.Write($"Done publishing stats for {characterId}");
+            LoggerGlobal.Write($"Chunk: {chunkCounter} Done publishing stats for {characterId}");
+        }
+        
 
         var instanceIds = new HashSet<long>();
         foreach (var activity in activityHistory)

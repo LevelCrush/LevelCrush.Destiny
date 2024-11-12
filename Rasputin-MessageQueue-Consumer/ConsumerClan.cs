@@ -151,6 +151,7 @@ public static class ConsumerClan
                     Entities = chunkEntities.ToArray()
                 });
             }
+            LoggerGlobal.Write($"Done crawling clan {entity}");
         }
         
         return true;

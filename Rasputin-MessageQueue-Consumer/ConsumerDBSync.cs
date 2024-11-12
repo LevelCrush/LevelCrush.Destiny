@@ -19,6 +19,7 @@ public static class ConsumerDbSync
     public const int ChunkSizeStats = 1000;
     public const int ChunkSizeInstances = 100;
     public const int ChunkSizeInstanceMembers = 1000;
+    public const int ChunkSizeCharacterHistoryActivity = 100;
 
     private static Dictionary<char, char> charMap = new Dictionary<char, char>()
     {
@@ -46,7 +47,7 @@ public static class ConsumerDbSync
             }
         }
 
-        return slugChars.ToString() ?? "";
+        return new string(slugChars);
     }
     
     public static async Task<bool> Process(MessageDbSync message)
@@ -345,7 +346,7 @@ public static class ConsumerDbSync
 
         await using (var db = await RasputinDatabase.Connect())
         {
-            LoggerGlobal.Write($"Writing {instanceRecord} to database");
+            LoggerGlobal.Write($"Writing {instanceId} to database");
             await db.Instances.Upsert(instanceRecord)
                 .On(p => new { p.InstanceId })
                 .WhenMatched((@old, @new) => new Instance()
@@ -364,8 +365,8 @@ public static class ConsumerDbSync
                 .RunAsync();
             
             
-            LoggerGlobal.Write($"Done writing {instanceRecord} to database");
-            LoggerGlobal.Write($"Now writing {instanceMemberRecords.Count} to database tied to {instanceRecord}");
+            LoggerGlobal.Write($"Done writing {instanceId} to database");
+            LoggerGlobal.Write($"Now writing {instanceMemberRecords.Count} to database tied to {instanceId}");
             
             foreach(var chunk in instanceMemberRecords.Chunk(ChunkSizeInstanceMembers)) {
                 await db.InstanceMembers.UpsertRange(instanceMemberRecords)
