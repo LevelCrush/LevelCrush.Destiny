@@ -1,6 +1,0 @@
-@Rasputin_Server_HostAddress = http://localhost:5136
-
-GET {{Rasputin_Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
