@@ -53,7 +53,7 @@ public class Tests
         clan.Task = MessageClanTask.Crawl;
         clan.Entities = new[]
         {
-          //  "4356849", // levelcrush
+           "4356849", // levelcrush
             "4250497", // level stomp
         };
 
