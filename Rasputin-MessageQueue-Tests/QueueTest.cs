@@ -89,4 +89,26 @@ public class Tests
 
         Assert.Pass();
     }
+    
+    [Test]
+    public async Task TestManifestSync()
+    {
+
+        // connect to the rasputin queue
+        QueueActions.Connect();
+        
+        
+        //  var user = await DestinyMember.Profile(4611686018439874403, 1);
+        QueueActions.Publish(new MessageAction()
+        {
+            Action = "manifest:sync",
+            Entities = []
+        });
+        
+        
+        QueueActions.Disconnect();
+        RasputinMessageQueue.Disconnect();
+
+        Assert.Pass();
+    }
 }

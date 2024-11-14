@@ -45,6 +45,10 @@ rootCommand.SetHandler((queue) =>
             LoggerGlobal.Write("Running consumer for db sync data");
             ConsumeDbQueue();
             break;
+        case "actions":
+            LoggerGlobal.Write("Running consumer for actions data");
+            ConsumeActionQueue();
+            break;
         case "instance":
         default:
             LoggerGlobal.Write("Running consumer for instance data");
@@ -105,14 +109,44 @@ void ConsumeDbQueue()
 {
     QueueDBSync.Subscribe(async (message) =>
     {
-        if (message != null)
+        try
         {
-            LoggerGlobal.Write($"DB sync message received. Type: {message.Task}");
-            await ConsumerDbSync.Process(message);
+            if (message != null)
+            {
+                LoggerGlobal.Write($"DB sync message received. Type: {message.Task}");
+                await ConsumerDbSync.Process(message);
+            }
+            else
+            {
+                LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
+            }
         }
-        else
+        catch (Exception e)
         {
-            LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+        }
+    });
+}
+
+void ConsumeActionQueue()
+{
+    QueueActions.Subscribe(async (message) =>
+    {
+        try
+        {
+            if (message != null)
+            {
+                LoggerGlobal.Write($"DB sync message received. Type: {message.Action}");
+                await ConsumerActions.Process(message);
+            }
+            else
+            {
+                LoggerGlobal.Write("Received a null db message. Deserialization may of gone wrong");
+            }
+        }
+        catch (Exception e)
+        {
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
         }
     });
 }
@@ -121,14 +155,22 @@ void ConsumeInstanceQueue()
 {
     QueueInstance.Subscribe(async (message) =>
     {
-        if (message != null)
+        try
         {
-            LoggerGlobal.Write($"Instance Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerInstance.Process(message);
+            if (message != null)
+            {
+                LoggerGlobal.Write(
+                    $"Instance Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+                await ConsumerInstance.Process(message);
+            }
+            else
+            {
+                LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
+            }
         }
-        else
+        catch (Exception e)
         {
-            LoggerGlobal.Write("Received a null instance. Deserialization may of gone wrong");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
         }
     });
 }
@@ -137,14 +179,21 @@ void ConsumeClanQueue()
 {
     QueueClan.Subscribe(async (message) =>
     {
-        if (message != null)
+        try
         {
-            LoggerGlobal.Write($"Clan Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerClan.Process(message);
+            if (message != null)
+            {
+                LoggerGlobal.Write($"Clan Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+                await ConsumerClan.Process(message);
+            }
+            else
+            {
+                LoggerGlobal.Write("Received a null clan. Deserialization may of gone wrong");
+            }
         }
-        else
+        catch (Exception e)
         {
-            LoggerGlobal.Write("Received a null clan. Deserialization may of gone wrong");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
         }
     });
 }
@@ -153,14 +202,22 @@ void ConsumeMemberQueue()
 {
     QueueMember.Subscribe(async (message) =>
     {
-        if (message != null)
+        try
         {
-            LoggerGlobal.Write($"Member Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
-            await ConsumerMember.Process(message);
+            if (message != null)
+            {
+                LoggerGlobal.Write(
+                    $"Member Message received. Processing: {JsonSerializer.Serialize(message.Entities)}");
+                await ConsumerMember.Process(message);
+            }
+            else
+            {
+                LoggerGlobal.Write("Received a null member. Deserialization may of gone wrong");
+            }
         }
-        else
+        catch (Exception e)
         {
-            LoggerGlobal.Write("Received a null member. Deserialization may of gone wrong");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
         }
     });
 }

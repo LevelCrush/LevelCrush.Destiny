@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 using Destiny.Models.Enums;
+using Destiny.Models.Manifests;
 using Destiny.Models.Responses;
 using Destiny.Models.Schemas;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ public static class ConsumerDbSync
     public const int ChunkSizeInstances = 100;
     public const int ChunkSizeInstanceMembers = 1000;
     public const int ChunkSizeCharacterHistoryActivity = 100;
+    public const int ChunkManifestRecords = 100;
 
     private static Dictionary<char, char> charMap = new Dictionary<char, char>()
     {
@@ -76,6 +78,21 @@ public static class ConsumerDbSync
             case MessageDbSyncTask.ClanRoster:
                 result = await ProcessClanRoster(message.Data);
                 break;
+            case MessageDbSyncTask.ManifestClassDefinitions:
+                result = await ProcessManifestClasses(message.Data);
+                break;
+            case MessageDbSyncTask.ManifestActivityDefinitions:
+                result = await ProcessManifestActivities(message.Data);
+                break;
+            case MessageDbSyncTask.ManifestActivityTypeDefinitions:
+                result = await ProcessManifestActivityTypes(message.Data);
+                break;
+            case MessageDbSyncTask.ManifestTriumphDefinitions:
+                result = await ProcessManifestRecords(message.Data);
+                break;
+            case MessageDbSyncTask.ManifestSeasonDefinitions:
+                result = await ProcessManifestSeasons(message.Data);
+                break;
             default:
                 LoggerGlobal.Write($"Unsupported db task type: {message.Task}");
                 break;
@@ -108,6 +125,276 @@ public static class ConsumerDbSync
 
 
         return result;
+    }
+
+    private static async Task<bool> ProcessManifestRecords(string data)
+    {
+        var definitions = JsonSerializer.Deserialize<ConcurrentDictionary<string, DestinyRecordDefinition>>(data);
+        if (definitions == null)
+        {
+            LoggerGlobal.Write($"Triumphs could not be deserialized {data}");
+            return false;
+        }
+
+        var records = new List<ManifestTriumph>();
+        foreach (var (hash, definition) in definitions)
+        {
+
+            definition.TitleInfo.TitlesByGender.TryGetValue("Male", out var title);
+            
+            records.Add(new ManifestTriumph()
+            {
+                Hash = definition.Hash, 
+                Name = definition.DisplayProperties.Name,
+                Description = definition.DisplayProperties.Description,
+                Title = title ?? "",
+                IsTitle = definition.TitleInfo.HasTitle,
+                Gilded = definition.ForTitleGilding,
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+        }
+        
+        LoggerGlobal.Write($"Syncing {records.Count} records to database");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            foreach (var chunk in records.Chunk(ChunkManifestRecords))
+            {
+                await db.ManifestTriumphs.UpsertRange(chunk)
+                    .On(p => new { p.Hash })
+                    .WhenMatched((@old, @new) => new ManifestTriumph()
+                    {
+                        Name = @new.Name,
+                        Description = @new.Description,
+                        Title = @new.Title, 
+                        IsTitle = @new.IsTitle,
+                        Gilded = @new.Gilded,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+            }
+        }
+        
+        LoggerGlobal.Write($"Done Syncing  {records.Count} triumph records to database");
+        return true;
+    }
+
+    private static async Task<bool> ProcessManifestActivities(string data)
+    {
+        var definitions = JsonSerializer.Deserialize<ConcurrentDictionary<string, DestinyActivityDefinition>>(data);
+        if (definitions == null)
+        {
+            LoggerGlobal.Write($"Activities could not be deserialized {data}");
+            return false;
+        }
+
+        var records = new List<ManifestActivity>();
+        foreach (var (hash, definition) in definitions)
+        {
+            records.Add(new ManifestActivity()
+            {
+                Hash = definition.Hash, 
+                Name = definition.DisplayProperties.Name,
+                Index = (int)definition.Index,
+                Description = definition.DisplayProperties.Description,
+                ImageUrl = definition.PgcrImage, 
+                FireteamMinSize = (int)definition.Matchmaking.MinParty, 
+                FireteamMaxSize = (int)definition.Matchmaking.MaxParty,
+                MaxPlayers = (int)definition.Matchmaking.MaxParty,
+                RequiresGuardianOath = definition.Matchmaking.RequiresGuardianOath,
+                IsPvp = definition.IsPvP,
+                MatchmakingEnabled = definition.Matchmaking.IsMatchmade,
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+        }
+        
+        LoggerGlobal.Write($"Syncing {records.Count} records to database");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            foreach (var chunk in records.Chunk(ChunkManifestRecords))
+            {
+                await db.ManifestActivities.UpsertRange(chunk)
+                    .On(p => new { p.Hash })
+                    .WhenMatched((@old, @new) => new ManifestActivity()
+                    {
+                        Name = @new.Name,
+                        Index = @new.Index,
+                        Description = @new.Description,
+                        ImageUrl = @new.ImageUrl, 
+                        FireteamMinSize = @new.FireteamMinSize, 
+                        FireteamMaxSize = @new.FireteamMaxSize,
+                        MaxPlayers = @new.MaxPlayers,
+                        RequiresGuardianOath = @new.RequiresGuardianOath,
+                        IsPvp = @new.IsPvp,
+                        MatchmakingEnabled =@new.MatchmakingEnabled,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+            }
+        }
+        
+        LoggerGlobal.Write($"Done Syncing  {records.Count} activity records to database");
+        
+        return true;
+    }
+
+    private static async Task<bool> ProcessManifestActivityTypes(string data)
+    {
+        var definitions = JsonSerializer.Deserialize<ConcurrentDictionary<string, DestinyActivityTypeDefinition>>(data);
+        if (definitions == null)
+        {
+            LoggerGlobal.Write($"Activity types could not be deserialized {data}");
+            return false;
+        }
+
+        var records = new List<ManifestActivityType>();
+        foreach (var (hash, definition) in definitions)
+        {
+            records.Add(new ManifestActivityType()
+            {
+                Hash = definition.Hash, 
+                Name = definition.DisplayProperties.Name,
+                Index = (int)definition.Index,
+                Description = definition.DisplayProperties.Description,
+                IconUrl = definition.DisplayProperties.Icon,
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+        }
+        
+        LoggerGlobal.Write($"Syncing {records.Count} records to database");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            foreach (var chunk in records.Chunk(ChunkManifestRecords))
+            {
+                await db.ManifestActivityTypes.UpsertRange(chunk)
+                    .On(p => new { p.Hash })
+                    .WhenMatched((@old, @new) => new ManifestActivityType()
+                    {
+                        Name = @new.Name,
+                        Index = @new.Index,
+                        Description = @new.Description,
+                        IconUrl = @new.IconUrl,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+            }
+        }
+        
+        LoggerGlobal.Write($"Done Syncing  {records.Count} activity type records to database");
+        
+        return true;
+    }
+    
+
+    private static async Task<bool> ProcessManifestSeasons(string data)
+    {
+        var definitions = JsonSerializer.Deserialize<ConcurrentDictionary<string, DestinySeasonDefinition>>(data);
+        if (definitions == null)
+        {
+            LoggerGlobal.Write($"Season Definitions could not be deserialized {data}");
+            return false;
+        }
+
+        var records = new List<ManifestSeason>();
+        foreach (var (hash, definition) in definitions)
+        {
+            records.Add(new ManifestSeason()
+            {
+                Hash = definition.Hash, 
+                Name = definition.DisplayProperties.Name,
+                PassHash = definition.SeasonPassHash,
+                Number = definition.SeasonNumber,
+                StartsAt = ((DateTimeOffset)definition.StartDate).ToUnixTimeSeconds(),
+                EndsAt = ((DateTimeOffset)definition.EndDate).ToUnixTimeSeconds(),
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+        }
+        
+        LoggerGlobal.Write($"Syncing {records.Count} records to database");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            foreach (var chunk in records.Chunk(ChunkManifestRecords))
+            {
+                await db.ManifestSeasons.UpsertRange(chunk)
+                    .On(p => new { p.Hash })
+                    .WhenMatched((@old, @new) => new ManifestSeason()
+                    {
+                        Name = @new.Name,
+                        PassHash = @new.PassHash,
+                        Number = @new.Number,
+                        StartsAt = @new.StartsAt,
+                        EndsAt = @new.EndsAt,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+            }
+        }
+        
+        LoggerGlobal.Write($"Done Syncing  {records.Count} season records to database");
+        
+        return true;
+    }
+    
+    private static async Task<bool> ProcessManifestClasses(string data)
+    {
+        var classDefinition = JsonSerializer.Deserialize<ConcurrentDictionary<string, DestinyClassDefinition>>(data);
+        if (classDefinition == null)
+        {
+            LoggerGlobal.Write($"Class Definitions could not be deserialized {data}");
+            return false;
+        }
+
+        var records = new List<ManifestClass>();
+        foreach (var (hash, definition) in classDefinition)
+        {
+            records.Add(new ManifestClass()
+            {
+                Hash = definition.Hash, 
+                Index = (int)definition.Index, 
+                Type = definition.ClassType,
+                Name = definition.DisplayProperties.Name,
+                CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                UpdatedAt = 0,
+                DeletedAt = 0
+            });
+        }
+        
+        LoggerGlobal.Write($"Syncing {records.Count} records to database");
+
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            foreach (var chunk in records.Chunk(ChunkManifestRecords))
+            {
+                await db.ManifestClasses.UpsertRange(chunk)
+                    .On(p => new { p.Hash })
+                    .WhenMatched((@old, @new) => new ManifestClass()
+                    {
+                        Name = @new.Name,
+                        Type = @new.Type,
+                        UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        DeletedAt = 0
+                    })
+                    .RunAsync();
+            }
+        }
+        LoggerGlobal.Write($"Done Syncing  {records.Count} class records to database");
+
+        return true;
     }
 
     private static async Task<bool> ProcessClanRoster(string data)
