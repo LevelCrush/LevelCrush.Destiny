@@ -31,7 +31,7 @@ public class DestinyActivityDefinition
     public uint PlaceHash { get; set; }
     
     [JsonPropertyName("pgcrImage")]
-    public string PgcrImage { get; set; }
+    public string PgcrImage { get; set; }  = string.Empty;
     
     [JsonPropertyName("isPvP")]
     public bool IsPvP { get; set; }
