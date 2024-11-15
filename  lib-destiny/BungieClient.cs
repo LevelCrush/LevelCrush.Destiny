@@ -6,6 +6,14 @@ namespace Destiny;
 
 public static class BungieClient
 {
+
+    internal static Queue<long> _attempts = new Queue<long>();
+    
+    public static RestClient Client { get; }
+
+    public static string ApiKey { get; set; }
+
+    
     static BungieClient()
     {
         Client = new RestClient(new RestClientOptions()
@@ -13,15 +21,7 @@ public static class BungieClient
             FollowRedirects = true,
         });
         ApiKey = "";
-
-        // expliclity set this
-       // Client.Options.FollowRedirects = true;
-        
     }
-
-    public static RestClient Client { get; }
-
-    public static string ApiKey { get; set; }
 
     public static ApiRequest<BaseRequest> Get(string endpoint)
     {

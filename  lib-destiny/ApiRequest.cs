@@ -11,6 +11,7 @@ namespace Destiny;
 
 public class ApiRequest<TRequestBody> where TRequestBody : class
 {
+    
     private readonly string _apiKey;
     private readonly RestClient _client;
     private readonly ConcurrentBag<DestinyComponentType> _components;
@@ -165,8 +166,36 @@ public class ApiRequest<TRequestBody> where TRequestBody : class
                 req.AddBody(_body);
             }
         }
+        
 
-
+        if (BungieClient._attempts.Count >= 100)
+        {
+            // check attempts
+            BungieClient._attempts.TryPeek(out var attemptTimestamp);
+            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if ((now - attemptTimestamp) <= 10)
+            {
+                // intentionally delay 20 seconds to avoid rate limiting
+                await Task.Delay(20);
+                
+                now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            }
+            
+            now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            while (BungieClient._attempts.Count > 0)
+            {
+                // this will continue until our most recent attempt if possible was less then 10 seconds ago 
+                BungieClient._attempts.TryDequeue(out var attempt);
+                if (now - attempt < 10)
+                {
+                    break;
+                }
+            }
+        }
+        
+        // track attempts in the bungie client 
+        BungieClient._attempts.Enqueue(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+    
         var res = await _client.ExecuteAsync<BungieResponse<TResponse>>(req);
         // our request **should** be auto followed but sometimes restsharp does not auto follow for some reason
         // this handles the redirects that Bungie has in place for some of their endpoints like stats.

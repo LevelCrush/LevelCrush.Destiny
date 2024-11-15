@@ -28,6 +28,9 @@ public static class ConsumerClan
             case MessageClanTask.Crawl:
                 await ProcessClanCrawl(clan.Entities);
                 break;
+            case MessageClanTask.CrawlFresh:
+                await ProcessClanCrawl(clan.Entities, true);
+                break;
             default:
                 LoggerGlobal.Write($"Clan task {clan.Task} is not implemented.");
                 break;
@@ -95,7 +98,7 @@ public static class ConsumerClan
         return rosters;
     }
 
-    public static async Task<bool> ProcessClanCrawl(string[] entities)
+    public static async Task<bool> ProcessClanCrawl(string[] entities, bool fresh = false)
     {
         
         var infos = await ProcessClanInfo(entities);
@@ -114,16 +117,25 @@ public static class ConsumerClan
                 LoggerGlobal.Write($"Could not get clan information or clan roster for clan {entity}");
                 continue;
             }
-
-            var membershipEntities = new List<string>();
-            foreach (var clanMember in clanRoster.Results)
-            {
-                membershipEntities.Add(clanMember.UserInfo.MembershipId.ToString());
-            }
-                
+            
             LoggerGlobal.Write($"Crawling clan roster profiles for clan {entity}");
-            var allProfileInstanceIds = await ConsumerMember.TaskActivities(membershipEntities.ToArray());
-                
+            var allProfileInstanceIds = new ConcurrentDictionary<string, HashSet<long>>();
+
+            try
+            {
+                foreach (var clanMember in clanRoster.Results)
+                {
+                    // turns out its better to go one at a time for reliablity
+                    var memberInstances = await ConsumerMember.TaskActivities([clanMember.UserInfo.MembershipId.ToString()], fresh);
+                    allProfileInstanceIds.Union(memberInstances);
+                }
+            
+            }
+            catch (Exception ex)
+            {
+                LoggerGlobal.Write($"Could not get all membership activities for clan {entity}");
+            }
+
             // union all instance ids together and ensure we only have unique ones
             var instanceIds = new HashSet<long>();
             foreach (var (member, profileInstances) in allProfileInstanceIds)

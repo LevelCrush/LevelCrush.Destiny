@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Destiny.Api;
 using Destiny.Models.Enums;
+using Microsoft.Extensions.Logging;
 using Rasputin_Redis;
 using Rasputin.Database;
 using Rasputin.Database.Models;
@@ -52,25 +53,32 @@ public static class ConsumerInstance
                     
                 continue;
             }
-            
-            var carnageReport = await DestinyInstance.CarnageReport(instanceId);
-            if (carnageReport != null)
+
+            try
             {
-                LoggerGlobal.Write($"Publishing  data for {instanceId} to the database queue");
-                QueueDBSync.Publish(new MessageDbSync()
+                var carnageReport = await DestinyInstance.CarnageReport(instanceId);
+                if (carnageReport != null)
                 {
-                    Task = MessageDbSyncTask.Instance,
-                    Data = JsonSerializer.Serialize(carnageReport)
-                });
-                LoggerGlobal.Write($"Done Publishing data for {instanceId} to the database queue");
-                LoggerGlobal.Write($"Setting key in redis for {instanceId}");
-                
-                await _redis.StringSetAsync(cacheKey, "1", TimeSpan.FromDays(1), true);
-                LoggerGlobal.Write($"Done Setting key in redis for {instanceId}");
+                    LoggerGlobal.Write($"Publishing  data for {instanceId} to the database queue");
+                    QueueDBSync.Publish(new MessageDbSync()
+                    {
+                        Task = MessageDbSyncTask.Instance,
+                        Data = JsonSerializer.Serialize(carnageReport)
+                    });
+                    LoggerGlobal.Write($"Done Publishing data for {instanceId} to the database queue");
+                    LoggerGlobal.Write($"Setting key in redis for {instanceId}");
+
+                    await _redis.StringSetAsync(cacheKey, "1", TimeSpan.FromDays(1), true);
+                    LoggerGlobal.Write($"Done Setting key in redis for {instanceId}");
+                }
+                else
+                {
+                    LoggerGlobal.Write($"Failed to deserialize instance {instanceId} as expected");
+                }
             }
-            else
+            catch (Exception e)
             {
-                LoggerGlobal.Write($"Failed to deserialize instance {instanceId} as expected");
+                LoggerGlobal.Write($"While processing {instanceId} an error occurred\r\n{e.Message}", LogLevel.Error);
             }
         }
 

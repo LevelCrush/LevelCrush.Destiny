@@ -3,11 +3,11 @@ using System.CommandLine;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Destiny;
+using Microsoft.Extensions.Logging;
 using Rasputin_Redis;
 using Rasputin.MessageQueue;
 using Rasputin.MessageQueue.Consumer;
 using Rasputin.MessageQueue.Queues;
-
 
 // load api configuration information
 var destinyApiConfig = DestinyConfig.Load();
@@ -29,7 +29,7 @@ rootCommand.SetHandler((queue) =>
 {
 
     var q = queue.Trim().ToLower();
-
+    LoggerGlobal.Name = q;
     switch (q)
     {
         case "member":
@@ -123,7 +123,7 @@ void ConsumeDbQueue()
         }
         catch (Exception e)
         {
-            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}", LogLevel.Error);
         }
     });
 }
@@ -146,7 +146,7 @@ void ConsumeActionQueue()
         }
         catch (Exception e)
         {
-            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}", LogLevel.Error);
         }
     });
 }
@@ -170,7 +170,7 @@ void ConsumeInstanceQueue()
         }
         catch (Exception e)
         {
-            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}", LogLevel.Error);
         }
     });
 }
@@ -193,7 +193,7 @@ void ConsumeClanQueue()
         }
         catch (Exception e)
         {
-            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}", LogLevel.Error);
         }
     });
 }
@@ -217,7 +217,7 @@ void ConsumeMemberQueue()
         }
         catch (Exception e)
         {
-            LoggerGlobal.Write($"An exception has occurred. {e.Message}");
+            LoggerGlobal.Write($"An exception has occurred. {e.Message}", LogLevel.Error);
         }
     });
 }
