@@ -40,10 +40,11 @@ public partial class DBDestinyContext : DbContext
             }
             else
             {
+                /*
                 var connectionStringBuilder = new SqliteConnectionStringBuilder(_config.Database + ".db");
                 connectionStringBuilder.DataSource = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                     connectionStringBuilder.DataSource);
-                optionsBuilder.UseSqlite(connectionStringBuilder.ToString());
+                optionsBuilder.UseSqlite(connectionStringBuilder.ToString()); */
             }
         }
     }
