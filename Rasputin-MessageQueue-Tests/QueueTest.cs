@@ -111,4 +111,48 @@ public class Tests
 
         Assert.Pass();
     }
+    
+    [Test]
+    public async Task TestMemberFetch()
+    {
+
+        // connect to the rasputin queue
+        QueueActions.Connect();
+        
+        
+        //  var user = await DestinyMember.Profile(4611686018439874403, 1);
+        QueueActions.Publish(new MessageAction()
+        {
+            Action = "crawl:members",
+            Entities = []
+        });
+        
+        
+        QueueActions.Disconnect();
+        RasputinMessageQueue.Disconnect();
+
+        Assert.Pass();
+    }
+    
+    [Test]
+    public async Task TestClanNetworkCrawl()
+    {
+
+        // connect to the rasputin queue
+        QueueActions.Connect();
+        
+        
+        //  var user = await DestinyMember.Profile(4611686018439874403, 1);
+        QueueActions.Publish(new MessageAction()
+        {
+            Action = "crawl:network:clans",
+            Entities = []
+        });
+        
+        
+        QueueActions.Disconnect();
+        RasputinMessageQueue.Disconnect();
+
+        Assert.Pass();
+    }
 }
