@@ -90,13 +90,13 @@ public class ConsumerActions
            LoggerGlobal.Write($"Fetched {results.Length} members");
 
            // yes we can in theory send all of these results into a single message
-           // but for better reliablity, send each one as its own message
+           // but for better reliability, send each one as its own message
            // this will also allow multiple consumers to handle multiple members at the same time
            // if we need to optimize we can chunk these by a smaller number later
            foreach (var member in results)
            {
                
-               // activity task are the most effecient for members to get all new information + activities
+               // activity task are the most efficient for members to get all new information + activities
                QueueMember.Publish(new MessageMember()
                {
                    Task = MessageMemberTask.Activities, 
