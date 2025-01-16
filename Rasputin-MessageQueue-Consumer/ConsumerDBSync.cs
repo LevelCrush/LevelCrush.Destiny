@@ -855,21 +855,69 @@ public static class ConsumerDbSync
 
         if (profileResponse.ProfileRecords != null && profileResponse.ProfileRecords.Data != null)
         {
-            tasks.Add(ProcessTriumphComponent(membershipId, profileResponse.ProfileRecords.Data.Records));
-        } 
+            tasks.Add(ProcessProfileTriumphComponent(membershipId, profileResponse.ProfileRecords.Data.Records));
+        }
+
+        if (profileResponse.CharacterRecords != null && profileResponse.CharacterRecords.Data != null)
+        {
+            foreach (var (characterIdRaw, charData) in profileResponse.CharacterRecords.Data)
+            {
+                long.TryParse(characterIdRaw, out var characterId);
+                tasks.Add(ProcessProfileCharacterTriumphComponent(membershipId, characterId, charData.Records));
+            }
+        }
         
         await Task.WhenAll(tasks).ConfigureAwait(false);
         
         return true;
     }
 
-    private static async Task<bool> ProcessTriumphComponent(long membershipId,
+    private static async Task<bool> ProcessProfileCharacterTriumphComponent(long membershipId, long characterId,
+        ConcurrentDictionary<string, DestinyRecordComponent> records)
+    {
+        await using (var db = await RasputinDatabase.Connect())
+        {
+            LoggerGlobal.Write($"Saving {membershipId}|{characterId} triumph records. Total of {records.Count}");
+            MemberCharacterTriumph[] triumphs = new MemberCharacterTriumph[records.Count];
+            var i = 0;
+            foreach (var (hash, triumph) in records)
+            {
+                uint triumphHash = 0;
+                var converted = uint.TryParse(hash, out triumphHash);
+                triumphs[i++] = new MemberCharacterTriumph()
+                {
+                    CharacterId = characterId,
+                    MembershipId = membershipId,
+                    Hash = converted ? triumphHash : 0,
+                    State = triumph.State,
+                    CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    UpdatedAt = 0,
+                    DeletedAt = 0
+                };
+            }
+
+            await db.MemberCharacterTriumphs.UpsertRange(triumphs)
+                .On(x => new { x.MembershipId, x.CharacterId, x.Hash })
+                .WhenMatched((@old, @new) => new MemberCharacterTriumph()
+                {
+                    State = @new.State,
+                    UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    DeletedAt = 0
+                })
+                .RunAsync();
+            
+        }
+        
+        return true;
+    }
+
+    private static async Task<bool> ProcessProfileTriumphComponent(long membershipId,
         ConcurrentDictionary<string, DestinyRecordComponent> records)
     {
         await using (var db = await RasputinDatabase.Connect())
         {
             LoggerGlobal.Write($"Saving {membershipId} triumph records. Total of {records.Count}");
-
+            
             MemberTriumph[] triumphs = new MemberTriumph[records.Count];
             var i = 0;
             foreach (var (hash, triumph) in records)
@@ -937,7 +985,7 @@ public static class ConsumerDbSync
                     UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
                 }).RunAsync();
 
-            LoggerGlobal.Write($"Done syncing profile for ({user.DisplayName} | {globalDisplayName}");
+            LoggerGlobal.Write($"Done syncing profile for ({user.DisplayName} | {globalDisplayName})");
         }
 
         return true;

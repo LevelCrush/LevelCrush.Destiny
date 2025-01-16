@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Concurrent;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Destiny.Models.Schemas;
 
@@ -33,4 +34,8 @@ public class DestinyProfileResponse
 
     [JsonPropertyName("profileRecords")]
     public DestinyComponent<DestinyProfileRecordsComponent>? ProfileRecords { get; set; }
+    
+    
+    [JsonPropertyName("characterRecords")]
+    public DestinyComponent<ConcurrentDictionary<string, DestinyCharacterRecordsComponent>>? CharacterRecords { get; set; }
 }
