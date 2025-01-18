@@ -14,4 +14,8 @@
       <PackageReference Include="NRedisStack" Version="0.13.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
+    </ItemGroup>
+
 </Project>
