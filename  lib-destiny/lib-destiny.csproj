@@ -5,6 +5,11 @@
         <RootNamespace>Destiny</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Destiny</Title>
+        <Authors>Level Crush </Authors>
+        <PackageProjectUrl>https://github.com/LevelCrush/destiny</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/LevelCrush/destiny</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
