@@ -12,6 +12,14 @@ public class DestinyConfig
     [DataMember]
     public List<int> NetworkClans { get; set; }
 
+    [DataMember] 
+    public string? ClientId { get; set; }
+    
+    [DataMember]
+    public string? ClientSecret { get; set; }
+    
+
+
     public static DestinyConfig Load()
     {
         var config = new ConfigurationBuilder()
