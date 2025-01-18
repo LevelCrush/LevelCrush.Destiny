@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib-destiny", " lib-destiny\lib-destiny.csproj", "{0C79D1EA-931B-4D09-8D03-3A666A8C448D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib-destiny", "lib-destiny\lib-destiny.csproj", "{0C79D1EA-931B-4D09-8D03-3A666A8C448D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib-destiny-tests", "lib-destiny-tests\lib-destiny-tests.csproj", "{D8029CA3-2135-41A6-82CA-FEF7626A03EF}"
 EndProject
