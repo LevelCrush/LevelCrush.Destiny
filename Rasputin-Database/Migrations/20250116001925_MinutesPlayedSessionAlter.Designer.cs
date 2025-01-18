@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rasputin.Database.Models;
 
@@ -10,9 +11,11 @@ using Rasputin.Database.Models;
 namespace Rasputin.Database.Migrations
 {
     [DbContext(typeof(DBDestinyContext))]
-    partial class DBDestinyContextModelSnapshot : ModelSnapshot
+    [Migration("20250116001925_MinutesPlayedSessionAlter")]
+    partial class MinutesPlayedSessionAlter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -991,59 +994,6 @@ namespace Rasputin.Database.Migrations
                     b.HasIndex(new[] { "Platform" }, "member_characters_platform_index");
 
                     b.ToTable("member_characters");
-                });
-
-            modelBuilder.Entity("Rasputin.Database.Models.MemberCharacterTriumph", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CharacterId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("character_id");
-
-                    b.Property<long>("CreatedAt")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_at");
-
-                    b.Property<long>("DeletedAt")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<uint>("Hash")
-                        .HasColumnType("int unsigned")
-                        .HasColumnName("hash");
-
-                    b.Property<long>("MembershipId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("membership_id");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int")
-                        .HasColumnName("state");
-
-                    b.Property<long>("UpdatedAt")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MembershipId", "Hash", "CharacterId")
-                        .IsUnique();
-
-                    b.HasIndex(new[] { "CharacterId" }, "member_character_triumphs_character_id_index");
-
-                    b.HasIndex(new[] { "Hash" }, "member_character_triumphs_hash_index");
-
-                    b.HasIndex(new[] { "MembershipId" }, "member_character_triumphs_membership_id_index");
-
-                    b.HasIndex(new[] { "State" }, "member_character_triumphs_state_index");
-
-                    b.ToTable("member_character_triumphs");
                 });
 
             modelBuilder.Entity("Rasputin.Database.Models.MemberTriumph", b =>

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-MessageQueue-Consu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasputin-Redis", "Rasputin-Redis\Rasputin-Redis.csproj", "{5132D0D7-EF60-42CE-BAA2-60D37FB6AB11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghost", "Ghost\Ghost.csproj", "{56BFEB56-EAA4-4DBD-9AB1-782747C3332C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{5132D0D7-EF60-42CE-BAA2-60D37FB6AB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5132D0D7-EF60-42CE-BAA2-60D37FB6AB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5132D0D7-EF60-42CE-BAA2-60D37FB6AB11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56BFEB56-EAA4-4DBD-9AB1-782747C3332C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56BFEB56-EAA4-4DBD-9AB1-782747C3332C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56BFEB56-EAA4-4DBD-9AB1-782747C3332C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56BFEB56-EAA4-4DBD-9AB1-782747C3332C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

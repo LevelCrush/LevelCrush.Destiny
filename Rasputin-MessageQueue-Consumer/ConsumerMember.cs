@@ -193,6 +193,7 @@ public static class ConsumerMember
             if (profile != null && profile.Profile != null && profile.Profile.Data != null)
             {
                 LoggerGlobal.Write($"{profile.Profile.Data.UserInfo.GlobalDisplayName}#{profile.Profile.Data.UserInfo.GlobalDisplayNameCode} profile has been found. Queing for sync");
+                
                 QueueDBSync.Publish(new MessageDbSync()
                 {
                     Task = MessageDbSyncTask.MemberProfile,

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
+using Rasputin.Database.Migrations;
 
 namespace Rasputin.Database.Models;
 
@@ -73,6 +74,8 @@ public partial class DBDestinyContext : DbContext
     public virtual DbSet<MemberActivityStat> MemberActivityStats { get; set; }
 
     public virtual DbSet<MemberCharacter> MemberCharacters { get; set; }
+    
+    public virtual DbSet<MemberCharacterTriumph> MemberCharacterTriumphs { get; set; }
 
     //public virtual DbSet<MemberSnapshot> MemberSnapshots { get; set; }
 
