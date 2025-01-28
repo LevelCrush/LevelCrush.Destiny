@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj" />
       <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
     </ItemGroup>
 

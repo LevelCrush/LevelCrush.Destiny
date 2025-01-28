@@ -10,9 +10,12 @@
         <Authors>Level Crush </Authors>
         <PackageProjectUrl>https://github.com/LevelCrush/destiny</PackageProjectUrl>
         <RepositoryUrl>https://github.com/LevelCrush/destiny</RepositoryUrl>
-        <Version>1.1.1</Version>
-        <AssemblyVersion>1.1.1</AssemblyVersion>
-        <FileVersion>1.1.1</FileVersion>
+        <Version>1.1.2</Version>
+        <AssemblyVersion>1.1.2</AssemblyVersion>
+        <FileVersion>1.1.2</FileVersion>
+        <AssemblyName>LevelCrush.Destiny</AssemblyName>
+        <PackageId>levelcrush-destiny</PackageId>
+        <Product>LevelCrush.Destiny</Product>
     </PropertyGroup>
 
     <ItemGroup>

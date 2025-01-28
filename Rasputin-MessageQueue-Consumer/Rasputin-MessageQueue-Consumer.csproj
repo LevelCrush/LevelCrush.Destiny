@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
       <ProjectReference Include="..\Rasputin-Database\Rasputin-Database.csproj" />
       <ProjectReference Include="..\Rasputin-MessageQueue\Rasputin-MessageQueue.csproj" />
     </ItemGroup>

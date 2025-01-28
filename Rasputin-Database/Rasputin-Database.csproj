@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ lib-destiny\lib-destiny.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="8.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
@@ -42,6 +38,10 @@
       <None Update="appsettings.Development.json">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
     </ItemGroup>
 
 </Project>
