@@ -10,9 +10,6 @@ using Rasputin.Database;
 var destinyApiConfig = DestinyConfig.Load();
 BungieClient.ApiKey = destinyApiConfig.ApiKey;
 
-var redis = RasputinRedis.Connect();
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
