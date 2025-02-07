@@ -22,7 +22,7 @@ var app = builder.Build();
 app.MapGet("/member/{bungieName}/titles", async (string bungieName) =>
 {
 
-    var targetMember = $"{bungieName}%";
+    var targetMember = $"{bungieName}";
     var membershipId = $"{bungieName}";
 
     await using (var db = await RasputinDatabase.Connect())
