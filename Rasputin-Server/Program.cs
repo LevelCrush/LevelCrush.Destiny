@@ -105,8 +105,3 @@ app.MapGet("/member/{bungieName}/titles", async (string bungieName) =>
 
 
 await app.RunAsync();
-
-// close all connections
-// this will also close all consumers and channels automatically
-await RasputinRedis.Close();
-
