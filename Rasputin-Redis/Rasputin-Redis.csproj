@@ -18,4 +18,12 @@
       <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="appsettings.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

@@ -13,6 +13,11 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
+      <None Remove="appsettings.json" />
+      <Content Include="appsettings.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -21,12 +26,6 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
       <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
     <ItemGroup>

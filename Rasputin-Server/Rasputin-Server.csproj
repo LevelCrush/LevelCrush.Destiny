@@ -7,6 +7,10 @@
         <RootNamespace>Rasputin_Server</RootNamespace>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
@@ -16,6 +20,12 @@
       <ProjectReference Include="..\lib-destiny\lib-destiny.csproj" />
       <ProjectReference Include="..\Rasputin-Database\Rasputin-Database.csproj" />
       <ProjectReference Include="..\Rasputin-Redis\Rasputin-Redis.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
