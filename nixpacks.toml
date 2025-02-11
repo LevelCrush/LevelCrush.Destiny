@@ -21,4 +21,4 @@ nixOverlays = []
 nixpkgsArchive = "a45fa362d887f4d4a7157d95c28ca9ce2899b70e"
 
 [start]
-cmd = 'cd out && ls' 
+cmd = 'cd out && dotnet Rasputin-Server.dll' 
