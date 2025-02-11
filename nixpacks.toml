@@ -9,7 +9,7 @@ nixpkgsArchive = "a45fa362d887f4d4a7157d95c28ca9ce2899b70e"
 
 [phases.build]
 dependsOn = ['install']
-cmds = ['dotnet publish ./Rasutin-Server/Rasputin-Server.csproj --no-restore -c Release -o ./out']
+cmds = ['dotnet publish ./Rasputin-Server/Rasputin-Server.csproj --no-restore -c Release -o ./out']
 
 [phases.install]
 dependsOn = ['setup']
