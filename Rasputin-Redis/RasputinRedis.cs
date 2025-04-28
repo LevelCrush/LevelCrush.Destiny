@@ -8,7 +8,28 @@ public static class RasputinRedis
 
     static RasputinRedis()
     {
-        _redis = ConnectionMultiplexer.Connect("127.0.0.1");
+        var redisConfig = RasputinRedisConfig.Load();
+        var config = ConfigurationOptions.Parse($"{redisConfig.Host}:{redisConfig.Port}");
+        if (redisConfig.Password != "")
+        {
+            config.Password = redisConfig.Password;
+        }
+
+        if (redisConfig.Username != "")
+        {
+            config.User = redisConfig.Username;
+        }
+
+        if (redisConfig.Database >= 0)
+        {
+            config.DefaultDatabase = redisConfig.Database;
+        }
+        else
+        {
+            config.DefaultDatabase = 0;
+        }
+        
+        _redis = ConnectionMultiplexer.Connect(config);
     }
 
     public static IDatabase Connect()

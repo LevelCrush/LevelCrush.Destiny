@@ -8,6 +8,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Rasputin-Database\Rasputin-Database.csproj" />
       <ProjectReference Include="..\Rasputin-MessageQueue\Rasputin-MessageQueue.csproj" />

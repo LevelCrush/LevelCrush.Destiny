@@ -9,7 +9,11 @@ nixpkgsArchive = "a45fa362d887f4d4a7157d95c28ca9ce2899b70e"
 
 [phases.build]
 dependsOn = ['install']
-cmds = ['dotnet publish ./Rasputin-Server/Rasputin-Server.csproj --no-restore -c Release -o ./out']
+cmds = [
+    'dotnet publish ./Rasputin-Server/Rasputin-Server.csproj --no-restore -c Release -o ./out/server',
+    'dotnet publish ./Rasputin-MessageQueue-Consumer/Rasputin-MessageQueue-Consumer.csproj --no-restore -c Release -o ./out/consumer',
+    'dotnet publish ./Rasputin-Jobs/Rasputin-Jobs.csproj --no-restore -c Release -o ./out/jobs'
+]
 
 [phases.install]
 dependsOn = ['setup']
@@ -21,4 +25,4 @@ nixOverlays = []
 nixpkgsArchive = "a45fa362d887f4d4a7157d95c28ca9ce2899b70e"
 
 [start]
-cmd = 'cd out && dotnet Rasputin-Server.dll' 
+cmd = 'dotnet ./out/server/Rasputin-Server.dll & dotnet ./out/consumer/Rasputin-MessageQueue-Consumer.dll --queue db & dotnet ./out/consumer/Rasputin-MessageQueue-Consumer.dll --queue actions & dotnet ./out/consumer/Rasputin-MessageQueue-Consumer.dll --queue instance & dotnet ./out/consumer/Rasputin-MessageQueue-Consumer.dll --queue clan & dotnet ./out/consumer/Rasputin-MessageQueue-Consumer.dll --queue member &' 
