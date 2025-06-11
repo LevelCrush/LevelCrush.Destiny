@@ -104,6 +104,67 @@ dotnet build destiny.sln
 dotnet test
 ```
 
+### Running the API Server
+
+```bash
+cd Rasputin-Server
+dotnet run
+```
+
+The API will be available at `http://localhost:5000`
+
+## API Examples
+
+### Member Endpoints
+
+```bash
+# Get member by Bungie name
+curl http://localhost:5000/api/members/PlayerName%231234
+
+# Get member by membership ID
+curl http://localhost:5000/api/members/4611686018467431790
+
+# Get member activities with filters
+curl "http://localhost:5000/api/members/PlayerName%231234/activities?page=1&pageSize=10&mode=4"
+
+# Get member statistics
+curl "http://localhost:5000/api/members/PlayerName%231234/stats?startDate=2024-01-01"
+
+# Get member titles
+curl http://localhost:5000/api/members/PlayerName%231234/titles
+
+# Get member leaderboard positions
+curl http://localhost:5000/api/members/PlayerName%231234/leaderboards
+```
+
+### Clan Endpoints
+
+```bash
+# Get clan information
+curl http://localhost:5000/api/clans/4107840
+
+# Get clan roster
+curl "http://localhost:5000/api/clans/4107840/roster?sortBy=lastPlayed"
+
+# Get clan statistics
+curl http://localhost:5000/api/clans/4107840/stats
+
+# List all network clans
+curl http://localhost:5000/api/clans?isNetwork=true
+```
+
+### Leaderboard Endpoints
+
+```bash
+# Get kill leaderboard
+curl "http://localhost:5000/api/leaderboards/kills?period=weekly&limit=50"
+
+# Get efficiency leaderboard for all time
+curl http://localhost:5000/api/leaderboards/efficiency
+```
+
+For detailed API documentation, see [CLAUDE.md](CLAUDE.md). For comprehensive usage examples in multiple programming languages, see [API_EXAMPLES.md](API_EXAMPLES.md).
+
 ## Project Goals
 
 1. **Provide Value**: Create tools that enhance the Destiny 2 experience for the Level Crush community
