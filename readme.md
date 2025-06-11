@@ -62,8 +62,70 @@ The project follows a microservices architecture with the following components:
    - Triggers specific actions via message queue
    - Enables scheduled data updates
 
+## Technology Stack
+
+- **Language**: C# (.NET 8)
+- **Database**: MySQL with Entity Framework Core
+- **Message Queue**: RabbitMQ
+- **Caching**: Redis
+- **API Framework**: ASP.NET Core Minimal APIs
+- **Testing**: xUnit
+- **Deployment**: Docker/Nixpacks compatible
+
+## Getting Started
+
+### Prerequisites
+
+- .NET 8 SDK
+- MySQL Server
+- RabbitMQ Server
+- Redis Server
+- Bungie API Key (obtain from [Bungie.net](https://www.bungie.net/en/Application))
+
+### Configuration
+
+Each component has its own `appsettings.json` file for configuration:
+
+- Database connection strings
+- RabbitMQ connection settings
+- Redis connection settings
+- Bungie API credentials
+- Service-specific settings
+
+### Building
+
+```bash
+dotnet build destiny.sln
+```
+
+### Running Tests
+
+```bash
+dotnet test
+```
+
+## Project Goals
+
+1. **Provide Value**: Create tools that enhance the Destiny 2 experience for the Level Crush community
+2. **Learn and Experiment**: Use modern technologies and patterns to expand technical knowledge
+3. **Iterate Quickly**: Ship working features and improve based on user feedback
+4. **Open Development**: Welcome community contributions and feedback
+
 ## Contributing
 
-We welcome all contributions. Feel free to open a [Github Discussion Post](./discussions) or raise any [Github Issues](./issues).
+We welcome all contributions! Feel free to:
+- Open a [Github Issue](https://github.com/levelcrush/destiny/issues) for bugs or feature requests
+- Submit Pull Requests with improvements
+- Join our [Discord](https://discord.gg/levelcrush) to discuss ideas
+
+## License
+
+This project is part of the Level Crush community initiatives. Please see LICENSE file for details.
+
+## Acknowledgments
+
+- The Level Crush gaming community for continuous feedback and support
+- Bungie for providing the Destiny 2 API
+- All contributors who have helped improve this project
 
 
